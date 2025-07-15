@@ -14,17 +14,24 @@ function saveIssues($filename, $data) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_url'])) {
-    $url = escapeshellarg(trim($_POST['new_url']));
+    $url = trim($_POST['new_url']);
     if (empty($_POST['new_suffix'])) {
-        // Optionally show an error or just exit
         exit;
     }
-    $suffix = escapeshellarg(trim($_POST['new_suffix']));
+    $suffix = trim($_POST['new_suffix']);
     $single = !empty($_POST['new_single']) ? '--single' : '';
-    $cmd = "nohup php check-headings.php $url $suffix";
+
+    // Immediately create/reset progress.json for the spinner
+    file_put_contents(__DIR__ . '/progress.json', json_encode([
+        'processed' => 0,
+        'total' => 0,
+        'done' => false
+    ]));
+
+    // Properly escape arguments for shell
+    $cmd = "nohup php check-headings.php " . escapeshellarg($url) . " " . escapeshellarg($suffix);
     if ($single) $cmd .= " $single";
     shell_exec("$cmd > /dev/null 2>&1 &");
-    exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_issues_file'])) {
@@ -215,6 +222,17 @@ foreach ($issues as $issue) {
             </div>
         </div>
     </form>
+    <div id="progress-container" style="display:none; margin-bottom:1rem;">
+        <div class="d-flex align-items-center">
+            <div class="spinner-border text-primary me-3" role="status"></div>
+            <div>
+                <span id="progress-text">Processing...</span>
+                <div class="progress mt-1" style="height: 8px; width: 200px;">
+                    <div id="progress-bar" class="progress-bar" role="progressbar" style="width:0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <p class="mb-3">
         <strong>Unsolved errors on this page:</strong> <?= $unsolvedCount ?>
     </p>
@@ -364,12 +382,6 @@ foreach ($issues as $issue) {
         <input type="hidden" name="file" value="<?= htmlspecialchars($selected) ?>">
         <button type="submit" class="btn btn-danger">Delete All Issues</button>
     </form>
-    <div id="loading-spinner" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(255,255,255,0.7); z-index:9999; align-items:center; justify-content:center; flex-direction:column;">
-        <div class="spinner-border text-primary" style="width:4rem; height:4rem;" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <div class="mt-3 fs-5 text-primary">Please wait, working on the website</div>
-    </div>
 </div>
 <script>
     window.addEventListener('DOMContentLoaded', reorderIssueCards);
@@ -478,25 +490,6 @@ foreach ($issues as $issue) {
         cards.forEach(card => issuesList.appendChild(card));
     }
 
-    // Update your form submit handler
-    document.getElementById('add-page-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (!confirm('Run heading check and create new file? NB!! It takes a while. Wait for at least 5-10 minutes before trying again.')) {
-            return;
-        }
-        const form = e.target;
-        const data = new FormData(form);
-        document.getElementById('loading-spinner').style.display = 'flex'; // Show spinner
-        fetch('', {
-            method: 'POST',
-            body: data
-        }).then(() => {
-            form.reset();
-        }).finally(() => {
-            document.getElementById('loading-spinner').style.display = 'none'; // Hide spinner
-        });
-    });
-
     document.querySelectorAll('.mark-solved-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const errorDiv = this.closest('.error');
@@ -516,6 +509,47 @@ foreach ($issues as $issue) {
         });
         errors.forEach(err => container.appendChild(err));
     }
+
+    document.getElementById('add-page-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('progress-container').style.display = 'flex';
+        fetch('', {
+            method: 'POST',
+            body: new FormData(this)
+        }).then(() => {
+            pollProgress();
+        });
+    });
+
+    function pollProgress() {
+        fetch('progress.json?' + Date.now())
+            .then(res => {
+                if (!res.ok) throw new Error('No progress');
+                return res.json();
+            })
+            .then(progress => {
+                const container = document.getElementById('progress-container');
+                const text = document.getElementById('progress-text');
+                const bar = document.getElementById('progress-bar');
+                if (progress && typeof progress.processed === 'number' && typeof progress.total === 'number') {
+                    const percent = Math.round((progress.processed / progress.total) * 100);
+                    text.textContent = `Processed: ${progress.processed} / ${progress.total} (${percent}%)`;
+                    bar.style.width = percent + '%';
+                    container.style.display = 'flex';
+                    if (progress.done) {
+                        container.style.display = 'none';
+                        clearInterval(progressInterval);
+                    }
+                } else {
+                    container.style.display = 'none';
+                }
+            })
+            .catch(() => {
+                document.getElementById('progress-container').style.display = 'none';
+            });
+    }
+    const progressInterval = setInterval(pollProgress, 2000);
+    pollProgress();
 </script>
 </body>
 </html>

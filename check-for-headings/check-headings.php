@@ -233,7 +233,6 @@ if (empty($urls)) {
 
 foreach ($urls as $url) {
     echo "Checking: $url from main loop\n";
-    error_log("Checking: $url from main loop");
     $normUrl = normalizeUrl($url);
     $html = fetchPage($url);
     if (empty($html)) {
@@ -249,6 +248,11 @@ foreach ($urls as $url) {
         'solved' => false,
     ];
     $counter++;
+    file_put_contents(__DIR__ . '/progress.json', json_encode([
+        'processed' => $counter,
+        'total' => count($urls),
+        'done' => false
+    ]));
     if ($counter % $batchSize === 0) {
         file_put_contents($tempFile, json_encode($newIssuesByUrl, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         $newIssuesByUrl = [];
@@ -304,5 +308,10 @@ file_put_contents($tempFile, '');
 if (file_exists($tempFile)) {
     unlink($tempFile);
 }
+file_put_contents(__DIR__ . '/progress.json', json_encode([
+    'processed' => $counter,
+    'total' => count($urls),
+    'done' => true
+]));
 echo "Check complete. See $outFile for results.\n";
 ?>
