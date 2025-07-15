@@ -1,0 +1,9 @@
+{
+  "require": {
+    "ext-libxml": "*",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-xmlreader": "*",
+    "ext-dom": "*"
+  }
+}

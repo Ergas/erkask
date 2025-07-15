@@ -1,1 +1,1 @@
-# erkask
+# Scripts created by ErKask

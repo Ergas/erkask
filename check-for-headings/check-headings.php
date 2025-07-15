@@ -1,0 +1,308 @@
+<?php
+error_reporting(E_ERROR | E_PARSE);
+
+$counter = 0;
+$batchSize = 50;
+
+$newIssuesByUrl = [];
+
+$inputUrl = $argv[1];
+$suffix = ($argc >= 3 && preg_match('/^[\w\-]+$/', $argv[2]) && $argv[2] !== '--single') ? '-' . $argv[2] : '';
+$singleMode = in_array('--single', $argv, true);
+
+$outFile = __DIR__ . DIRECTORY_SEPARATOR . 'headings_issues' . $suffix . '.json';
+$tempFile = __DIR__ . DIRECTORY_SEPARATOR . 'headings_issues_temp' . $suffix . '.json';
+file_put_contents($tempFile, '');
+
+$prevIssues = file_exists($outFile) ? json_decode(file_get_contents($outFile), true) ?: [] : [];
+$prevIssuesByUrl = [];
+foreach ($prevIssues as $issue) {
+    $normUrl = normalizeUrl($issue['url']);
+    $prevIssuesByUrl[$normUrl] = $issue;
+}
+
+function fetchPage($url) {
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_USERAGENT => 'HeadingCheckerBot/1.0',
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_SSL_VERIFYPEER => false,
+    ]);
+    $html = curl_exec($ch);
+    if ($html === false) {
+        $err = curl_error($ch);
+        echo "cURL error for $url: $err\n";
+    }
+    curl_close($ch);
+    return $html;
+}
+
+function getUrlsFromSitemap($sitemapUrl) {
+    $urls = [];
+    $reader = new XMLReader();
+    if (!$reader->open($sitemapUrl)) return [];
+    while ($reader->read()) {
+        if ($reader->nodeType == XMLReader::ELEMENT && $reader->name == 'loc') {
+            $urls[] = $reader->readString();
+        }
+    }
+    $reader->close();
+    return $urls;
+}
+
+function checkHeadings($html) {
+    $dom = new DOMDocument();
+    @$dom->loadHTML($html);
+    $xpath = new DOMXPath($dom);
+    $headings = [];
+    foreach (['h1','h2','h3','h4','h5','h6'] as $tag) {
+        foreach ($xpath->query("//$tag") as $node) {
+            $region_id = '';
+            $parent = $node->parentNode;
+            $section = '';
+            while ($parent && $parent->nodeType === XML_ELEMENT_NODE) {
+                if (!$region_id && $parent->hasAttribute('role') && $parent->getAttribute('role') === 'region') {
+                    $region_id = $parent->getAttribute('id');
+                }
+                if (!$section && in_array(strtolower($parent->nodeName), ['header', 'main', 'footer'])) {
+                    $section = strtolower($parent->nodeName);
+                }
+                $parent = $parent->parentNode;
+            }
+            $headings[] = [
+                'tag' => $node->nodeName,
+                'id' => $node->getAttribute('id'),
+                'class' => $node->getAttribute('class'),
+                'region_id' => $region_id,
+                'section' => $section,
+                'text' => trim($node->textContent)
+            ];
+        }
+    }
+    $lastLevel = 0;
+    $lastLevelId = '';
+    $lastHeadingText = '';
+    $h1Count = 0;
+    $errors = [];
+    foreach ($headings as $idx => $heading) {
+        $tag = $heading['tag'];
+        $level = intval(substr($tag, 1));
+        if ($level === 1) $h1Count++;
+        if ($lastLevel && ($level > $lastLevel + 1)) {
+            $errors[] = [
+                "type" => "Hierarchy error",
+                "id" => $heading['id'],
+                "className" => $heading['class'],
+                "section" => $heading['section'],
+                "regionId" => $heading['region_id'],
+                "message" => "Heading <$tag> (\"{$heading['text']}\") is not in correct hierarchy after <h$lastLevel> (Id: $lastLevelId; Text: \"$lastHeadingText\").",
+                "solved" => false,
+                "comments" => [],
+            ];
+        }
+        $lastLevel = $level;
+        $lastLevelId = $heading['id'] ?: ($heading['region_id'] ?: "no-id");
+        $lastHeadingText = $heading['text'];
+    }
+    if ($h1Count === 0) {
+        $errors[] = [
+            "type" => "No <H1> found",
+            "id" => null,
+            "className" => null,
+            "section" => null,
+            "regionId" => null,
+            "message" => null,
+            "solved" => false,
+            "comments" => [],
+        ];
+    } elseif ($h1Count > 1) {
+        $h1s = [];
+        foreach ($headings as $heading) {
+            if (strtolower($heading['tag']) === 'h1') {
+                $attrs = [];
+                if ($heading['id']) $attrs[] = 'id="' . $heading['id'] . '"';
+                if ($heading['class']) $attrs[] = 'class="' . $heading['class'] . '"';
+                if ($heading['region_id']) $attrs[] = 'region_id="' . $heading['region_id'] . '"';
+                if ($heading['section']) $attrs[] = 'section="' . $heading['section'] . '"';
+                $h1s[] = '<h1' . ($attrs ? ' ' . implode(' ', $attrs) : '') . '>';
+            }
+        }
+        $errors[] = [
+            "type" => "Multiple H1 error",
+            "id" => null,
+            "className" => null,
+            "section" => null,
+            "regionId" => null,
+            "message" => $h1s,
+            "solved" => false,
+            "comments" => [],
+        ];
+    }
+    libxml_clear_errors();
+    return $errors;
+}
+
+function getDomain($url) {
+    $parts = parse_url($url);
+    if (isset($parts['scheme']) && isset($parts['host'])) {
+        $domain = $parts['scheme'] . '://' . $parts['host'];
+        if (isset($parts['port'])) {
+            $domain .= ':' . $parts['port'];
+        }
+        return $domain;
+    }
+    if (isset($parts['host'])) {
+        $domain = 'http://' . $parts['host'];
+        if (isset($parts['port'])) {
+            $domain .= ':' . $parts['port'];
+        }
+        return $domain;
+    }
+    if (isset($parts['path']) && $parts['path'] === 'localhost') {
+        return 'http://localhost';
+    }
+    return '';
+}
+
+function isInternal($base, $url) {
+    $baseParts = parse_url($base);
+    $urlParts = parse_url($url);
+    return isset($urlParts['host'], $baseParts['host']) &&
+        $urlParts['host'] === $baseParts['host'] &&
+        (isset($urlParts['port']) ? $urlParts['port'] : null) === (isset($baseParts['port']) ? $baseParts['port'] : null);
+}
+
+function crawlSite($startUrl) {
+    $visited = [];
+    $queue = [$startUrl];
+
+    while ($queue) {
+        $url = array_shift($queue);
+        if (isset($visited[$url])) continue;
+        $visited[$url] = true;
+        yield $url;
+
+        $html = fetchPage($url);
+        if ($html === false) continue;
+        $dom = new DOMDocument();
+        @$dom->loadHTML($html);
+        $xpath = new DOMXPath($dom);
+        foreach ($xpath->query('//a[@href]') as $a) {
+            $href = $a->getAttribute('href');
+            $abs = filter_var($href, FILTER_VALIDATE_URL) ? $href : rtrim(getDomain($url), '/') . '/' . ltrim($href, '/');
+            if (isInternal($startUrl, $abs) && !isset($visited[$abs])) {
+                $queue[] = $abs;
+            }
+        }
+        unset($dom, $xpath, $html);
+    }
+}
+
+function normalizeUrl($url) {
+    $parts = parse_url($url);
+    $scheme = isset($parts['scheme']) ? strtolower($parts['scheme']) : 'http';
+    $host = isset($parts['host']) ? strtolower($parts['host']) : '';
+    $host = preg_replace('/^www\./', '', $host);
+    $port = isset($parts['port']) ? ':' . $parts['port'] : '';
+    $path = isset($parts['path']) ? rtrim($parts['path'], '/') : '';
+    return "$scheme://$host$port" . ($path ? $path : '');
+}
+
+if ($argc < 2 || $argc > 4) {
+    echo "Usage: php check-headings.php <url> [suffix] [--single]\n";
+    exit(1);
+}
+
+if ($singleMode) {
+    $urls = [$inputUrl];
+} elseif (preg_match('/sitemap\.xml$/i', $inputUrl)) {
+    $urls = getUrlsFromSitemap($inputUrl);
+} else {
+    $urls = [];
+    foreach (crawlSite($inputUrl) as $url) {
+        $urls[] = $url;
+    }
+}
+
+if (empty($urls)) {
+    echo "No URLs found to check.\n";
+    exit(1);
+}
+
+foreach ($urls as $url) {
+    echo "Checking: $url from main loop\n";
+    error_log("Checking: $url from main loop");
+    $normUrl = normalizeUrl($url);
+    $html = fetchPage($url);
+    if (empty($html)) {
+        echo "Failed to fetch or empty HTML for $url\n";
+        continue;
+    }
+    $errorObjs = checkHeadings($html);
+    $issueId = md5($normUrl);
+    $newIssuesByUrl[$normUrl] = [
+        'id' => $issueId,
+        'url' => $url,
+        'error' => $errorObjs,
+        'solved' => false,
+    ];
+    $counter++;
+    if ($counter % $batchSize === 0) {
+        file_put_contents($tempFile, json_encode($newIssuesByUrl, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $newIssuesByUrl = [];
+    }
+}
+
+if (!empty($newIssuesByUrl)) {
+    file_put_contents($tempFile, json_encode($newIssuesByUrl, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+}
+
+// Merge previous and new issues
+$mergedIssues = [];
+foreach ($newIssuesByUrl as $url => $newIssue) {
+    $prevIssue = $prevIssuesByUrl[$url] ?? null;
+    $mergedIssue = $newIssue;
+    $mergedIssue['solved'] = $prevIssue['solved'] ?? false;
+    $mergedIssue['comments'] = $prevIssue['comments'] ?? [];
+    $prevErrors = $prevIssue['error'] ?? [];
+    $newErrors = $newIssue['error'] ?? [];
+    $mergedErrors = [];
+    $prevErrorMap = [];
+    foreach ($prevErrors as $err) {
+        $key = md5(json_encode([$err['type'], $err['id'], $err['message']]));
+        $prevErrorMap[$key] = $err;
+    }
+    foreach ($newErrors as $err) {
+        $key = md5(json_encode([$err['type'], $err['id'], $err['message']]));
+        if (isset($prevErrorMap[$key])) {
+            $err['solved'] = $prevErrorMap[$key]['solved'] ?? false;
+            $err['comments'] = $prevErrorMap[$key]['comments'] ?? [];
+            unset($prevErrorMap[$key]);
+        } else {
+            $err['solved'] = false;
+            $err['comments'] = [];
+        }
+        $mergedErrors[] = $err;
+    }
+    foreach ($prevErrorMap as $err) {
+        $mergedErrors[] = $err;
+    }
+    $mergedIssue['error'] = $mergedErrors;
+    $mergedIssues[] = $mergedIssue;
+}
+
+foreach ($prevIssuesByUrl as $url => $prevIssue) {
+    if (!isset($newIssuesByUrl[$url])) {
+        $mergedIssues[] = $prevIssue;
+    }
+}
+
+file_put_contents($outFile, json_encode($mergedIssues, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+file_put_contents($tempFile, '');
+if (file_exists($tempFile)) {
+    unlink($tempFile);
+}
+echo "Check complete. See $outFile for results.\n";
+?>
