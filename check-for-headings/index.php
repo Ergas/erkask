@@ -539,6 +539,7 @@ foreach ($issues as $issue) {
                     if (progress.done) {
                         container.style.display = 'none';
                         clearInterval(progressInterval);
+                        location.reload();
                     }
                 } else {
                     container.style.display = 'none';
