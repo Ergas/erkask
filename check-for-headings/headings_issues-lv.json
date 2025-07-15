@@ -1,0 +1,554 @@
+[
+    {
+        "id": "36dcf6b0cf735fc0be54135c4dc37c5a",
+        "url": "https://bigbank.lv/ru",
+        "error": [
+            {
+                "type": "Multiple H1 error",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": [
+                    "<h1 class=\"hero-banner-slider-v2__slide__content__title m-b-0 m-b-md-20\" region_id=\"section_1669\" section=\"main\">",
+                    "<h1 class=\"hero-banner-slider-v2__slide__content__title m-b-0 m-b-md-20\" region_id=\"section_1669\" section=\"main\">",
+                    "<h1 class=\"hero-banner-slider-v2__slide__content__title m-b-0 m-b-md-20\" region_id=\"section_1669\" section=\"main\">"
+                ],
+                "solved": true,
+                "comments": [
+                    {
+                        "text": "Duplicate",
+                        "timestamp": "2025-07-16 00:14:39"
+                    }
+                ]
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "076e0b028166cba51c9e07e93f7c2c05",
+        "url": "https://bigbank.lv/",
+        "error": [
+            {
+                "type": "Multiple H1 error",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": [
+                    "<h1 class=\"hero-banner-slider-v2__slide__content__title m-b-0 m-b-md-20\" region_id=\"section_728\" section=\"main\">",
+                    "<h1 class=\"hero-banner-slider-v2__slide__content__title m-b-0 m-b-md-20\" region_id=\"section_728\" section=\"main\">",
+                    "<h1 class=\"hero-banner-slider-v2__slide__content__title m-b-0 m-b-md-20\" region_id=\"section_728\" section=\"main\">"
+                ],
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "f6fae385f4dcfe5a8fcde94a978661fa",
+        "url": "https://bigbank.lv/ru/jaunumi/kak-ne-poterjatsja-v-budzete-na-remont-zilja/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "7304e8403c9f2f45b42ad31861aaf242",
+        "url": "https://bigbank.lv/ru/jaunumi/sovmestnoe-imuschestvo-v-kredite-no-ne-zaregistrirovannoe-kto-evo-unasleduet/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "16a80f7466ffa42d862dcb4902cbb928",
+        "url": "https://bigbank.lv/ru/jaunumi/srednie-summi-ziliscnovo-kredita-na-20-30-procent-vise-cem-proslovo-goda/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "8c041581c9882a74eb55cd921e7f72f2",
+        "url": "https://bigbank.lv/ru/jaunumi/sto-nuzno-sobludatj-pri-pokupke-kvartjiri-v-escje-nedostroennom-novom-projekte/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "5a9e0135b6553619c08c674e83555a7c",
+        "url": "https://bigbank.lv/ru/jaunumi/stoit-li-otkritj-vklad-dla-obespecenia-budusevo-rebenka/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "8f12a97c74c1925d98fa146cc7277162",
+        "url": "https://bigbank.lv/ru/jaunumi/subordinirovannije-obligaciji-bigbank-ijunj-2025/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "5a71641b3ae9ded8645b15409e2eaefe",
+        "url": "https://bigbank.lv/ru/jaunumi/subordinirovannije-obligaciji-bigbank-maij-2024/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "9dce2728115f17672f073308e4e4dfd4",
+        "url": "https://bigbank.lv/ru/jaunumi/subordinirovannije-obligaciji-bigbank-oktabra-2024/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "f68aa64fe3d383e8d3e7cd34753a4bf5",
+        "url": "https://bigbank.lv/ru/jaunumi/tendenciji-ispolzavanija-solnechnih-panelej-i-prognozi-na-budusheje/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "20d148e398efcf2967cec069d3080907",
+        "url": "https://bigbank.lv/ru/jaunumi/transformacija-bankovskogo-sektora/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "b2d59e888da9d8a933aec2d2a63d7aac",
+        "url": "https://bigbank.lv/ru/jaunumi/uznaite-kak-bank-ocenivaet-vasi-kreditnie-vosmoznosti/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "c37615b924b9c8a9ccc4f8ddff0b49f5",
+        "url": "https://bigbank.lv/ru/jaunumi/v-latvii-i-estonii-ekonomika-budet-vosstanavlivatsja-medlennee-cem-ozidalosj-2/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "19b34aa91147592456dc9742ad0a69a5",
+        "url": "https://bigbank.lv/ru/jaunumi/v-latvii-i-estonii-ekonomika-budet-vosstanavlivatsja-medlennee-cem-ozidalosj/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "a0ffe6a5832b5caa26680e06912a14ad",
+        "url": "https://bigbank.lv/ru/jaunumi/v-rige-otkoetsa-sovremennij-koliving/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "edac6d3dfd55708c910d8a220d169690",
+        "url": "https://bigbank.lv/ru/jaunumi/varianti-podderzki-semej-s-detmi/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "f56e943c19476a0b9eee5fe6699b66a6",
+        "url": "https://bigbank.lv/ru/jaunumi/za-poslednie-12-mesazev-kolicestvo-novih-dogovorov-ziliscnovo-kreditovania-bolse-vsevo-viroslo-v-latvii/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "e3215c9df11c312441097002a9fa147d",
+        "url": "https://bigbank.lv/ru/privatpersonam/auto-kredits/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "process-steps-horizontal-title-section_1877",
+                "className": "bb-heading bb-heading--responsive bb-heading--center",
+                "section": "main",
+                "regionId": "",
+                "message": "Heading <h6> (\"\u041f\u0420\u041e\u0426\u0415\u0421\u0421 \u041f\u041e\u041b\u0423\u0427\u0415\u041d\u0418\u042f \u041a\u0420\u0415\u0414\u0418\u0422\u0410 \u041f\u0420\u041e\u0421\u0422\u041e\u0419 \u0418 \u0411\u042b\u0421\u0422\u0420\u042b\u0419 \u041a\u0440\u0435\u0434\u0438\u0442 \u0432 \u0447\u0435\u0442\u044b\u0440\u0435 \u044d\u0442\u0430\u043f\u0430\") is not in correct hierarchy after <h4> (Id: no-id; Text: \"\u041d\u0443\u0436\u043d\u0430 \u043f\u043e\u043c\u043e\u0449\u044c?\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "8855d9dc932e7a0bfdd8782f3045ea9d",
+        "url": "https://bigbank.lv/ru/privatpersonam/hipotekara-aizdevuma-refinansesana/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "63ba3ac11d58f89b389cf30d24e32931",
+        "url": "https://bigbank.lv/ru/privatpersonam/hipotekarais-aizdevums/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-heading bb-heading--responsive bb-heading--left m-b-40 m-b-md-80",
+                "section": "main",
+                "regionId": "pravila-i-uslovija",
+                "message": "Heading <h6> (\"\u041f\u0420\u0410\u0412\u0418\u041b\u0410 \u0418 \u0423\u0421\u041b\u041e\u0412\u0418\u042f \u0423\u0437\u043d\u0430\u0439 \u0443\u0441\u043b\u043e\u0432\u0438\u044f \u0438\u043f\u043e\u0442\u0435\u0447\u043d\u043e\u0433\u043e \u043a\u0440\u0435\u0434\u0438\u0442\u0430, \u0441\u043e\u043f\u0443\u0442\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0435 \u0440\u0430\u0441\u0445\u043e\u0434\u044b, \u043f\u043e\u043b\u0435\u0437\u043d\u0443\u044e \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044e \u0438 \u0447\u0430\u0441\u0442\u043e \u0437\u0430\u0434\u0430\u0432\u0430\u0435\u043c\u044b\u0435 \u0432\u043e\u043f\u0440\u043e\u0441\u044b\") is not in correct hierarchy after <h4> (Id: no-id; Text: \"\u041d\u0443\u0436\u043d\u0430 \u043f\u043e\u043c\u043e\u0449\u044c?\").",
+                "solved": true,
+                "comments": [
+                    {
+                        "text": "Multicontent",
+                        "timestamp": "2025-07-16 00:17:17"
+                    }
+                ]
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "977f5ce23c993f15a7057cfe49a2da67",
+        "url": "https://bigbank.lv/ru/privatpersonam/krajkonts/",
+        "error": [
+            {
+                "type": "Multiple H1 error",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": [
+                    "<h1 id=\"products-hero-banner-title-section_1398\" class=\"products-hero-banner__title m-0 f-color-navy\" region_id=\"section_1398\" section=\"main\">",
+                    "<h1 id=\"hero-banner-title-mz8hakdn\" class=\"hero-banner__title col-sm-20 col-xl-18\" region_id=\"herowhite\" section=\"main\">"
+                ],
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "e60bbd9fcecc2ba78a780357206c38ff",
+        "url": "https://bigbank.lv/ru/privatpersonam/kreditkarte-ru/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "d4d3cf50d223168701e2162f720b7c10",
+        "url": "https://bigbank.lv/ru/privatpersonam/kredits-pret-nekustama-ipasuma-kilu/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "369b835eabca408ac891e362a2ccdf51",
+        "url": "https://bigbank.lv/ru/privatpersonam/kreditu-apvienosana/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "process-steps-horizontal-title-section_1870",
+                "className": "bb-heading bb-heading--responsive bb-heading--center",
+                "section": "main",
+                "regionId": "",
+                "message": "Heading <h6> (\"\u041f\u0420\u041e\u0426\u0415\u0421\u0421 \u041f\u041e\u041b\u0423\u0427\u0415\u041d\u0418\u042f \u041a\u0420\u0415\u0414\u0418\u0422\u0410 \u041f\u0420\u041e\u0421\u0422\u041e\u0419 \u0418 \u0411\u042b\u0421\u0422\u0420\u042b\u0419 \u041a\u0440\u0435\u0434\u0438\u0442 \u0432 \u0447\u0435\u0442\u044b\u0440\u0435 \u044d\u0442\u0430\u043f\u0430\") is not in correct hierarchy after <h4> (Id: no-id; Text: \"\u041d\u0443\u0436\u043d\u0430 \u043f\u043e\u043c\u043e\u0449\u044c?\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "7fd783558c683143748a2012f0a43ce6",
+        "url": "https://bigbank.lv/ru/privatpersonam/majokla-energoefektivitatei/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "a876c80fc5967752f9ab3395ef8ff8e6",
+        "url": "https://bigbank.lv/ru/privatpersonam/noguldijumi/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "60adbfbcaa7d273915f5070d7c694a43",
+        "url": "https://bigbank.lv/ru/privatpersonam/paterina-kredits/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "process-steps-horizontal-title-section_1898",
+                "className": "bb-heading bb-heading--responsive bb-heading--center",
+                "section": "main",
+                "regionId": "",
+                "message": "Heading <h6> (\"\u041f\u0420\u041e\u0426\u0415\u0421\u0421 \u041f\u041e\u041b\u0423\u0427\u0415\u041d\u0418\u042f \u041a\u0420\u0415\u0414\u0418\u0422\u0410 \u041f\u0420\u041e\u0421\u0422\u041e\u0419 \u0418 \u0411\u042b\u0421\u0422\u0420\u042b\u0419 \u041a\u0440\u0435\u0434\u0438\u0442 \u0432 \u0447\u0435\u0442\u044b\u0440\u0435 \u044d\u0442\u0430\u043f\u0430\") is not in correct hierarchy after <h4> (Id: no-id; Text: \"\u041d\u0443\u0436\u043d\u0430 \u043f\u043e\u043c\u043e\u0449\u044c?\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "e19c09bd83fe04e66be2b4ad13c27931",
+        "url": "https://bigbank.lv/ru/privatpersonam/remonta-kredits/",
+        "error": [
+            {
+                "type": "No <H1> found",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": null,
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "ec12a4b003b39c12c10c7520cbdae6b4",
+        "url": "https://bigbank.lv/ru/privatpersonam/standarta-remonta-kredits/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u044b \u043c\u043e\u0436\u0435\u043c \u043f\u043e\u043c\u043e\u0447\u044c?\") is not in correct hierarchy after <h2> (Id: common-contacts-section-section_1754; Text: \"\u041d\u0443\u0436\u043d\u0430 \u043f\u043e\u043c\u043e\u0449\u044c?\").",
+                "solved": true,
+                "comments": []
+            },
+            {
+                "type": "Hierarchy error",
+                "id": "process-steps-horizontal-title-section_1750",
+                "className": "bb-heading bb-heading--responsive bb-heading--center",
+                "section": "main",
+                "regionId": "",
+                "message": "Heading <h6> (\"\u041f\u0420\u041e\u0426\u0415\u0421\u0421 \u041f\u041e\u041b\u0423\u0427\u0415\u041d\u0418\u042f \u041a\u0420\u0415\u0414\u0418\u0422\u0410 \u041f\u0420\u041e\u0421\u0422\u041e\u0419 \u0418 \u0411\u042b\u0421\u0422\u0420\u042b\u0419 \u041a\u0440\u0435\u0434\u0438\u0442 \u0432 \u0447\u0435\u0442\u044b\u0440\u0435 \u044d\u0442\u0430\u043f\u0430\") is not in correct hierarchy after <h4> (Id: no-id; Text: \"\u041d\u0443\u0436\u043d\u0430 \u043f\u043e\u043c\u043e\u0449\u044c?\").",
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true,
+        "comments": []
+    },
+    {
+        "id": "8bbb9cbea8e8b014508e754c8a0321d0",
+        "url": "https://bigbank.lv/ru/uznemumiem/aizdevums-lauksaimniekiem-un-mezsaimniekiem/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "db516077b2a96dd0b5278b85c0007ea5",
+        "url": "https://bigbank.lv/ru/uznemumiem/aizdevums-nekustama-ipasuma-attistibai/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "21714e4a682f25b84e1e6abcce6b1d66",
+        "url": "https://bigbank.lv/ru/uznemumiem/aizdevums-pret-nekustama-ipasuma-nodrosinajumu/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "a3fda47ace414e2b734ca7deb04aa182",
+        "url": "https://bigbank.lv/ru/uznemumiem/auto-kredits-uznemejiem/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "deef8aa0cc241e4385c27607eda43484",
+        "url": "https://bigbank.lv/ru/uznemumiem/auto-lizings-uznemumiem/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "02f666bd5a2b320be2c8424048e5bee2",
+        "url": "https://bigbank.lv/ru/uznemumiem/finansejums-saimnieciskas-darbibas-nodrosinasanai/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "946ead05639adc7dba3f595c83c5aadd",
+        "url": "https://bigbank.lv/ru/uznemumiem/iekartu-un-tehnikas-lizings-uznemumiem/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "d8ae32fc13e3faca1bf898d7f0919f8d",
+        "url": "https://bigbank.lv/ru/uznemumiem/investiciju-aizdevums/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "26a4fbb52e88f167a84c766a1064db54",
+        "url": "https://bigbank.lv/ru/uznemumiem/krajkonts-uznemumiem/",
+        "error": [
+            {
+                "type": "Multiple H1 error",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": [
+                    "<h1 id=\"products-hero-banner-title-section_1818\" class=\"products-hero-banner__title m-0 f-color-navy\" region_id=\"section_1818\" section=\"main\">",
+                    "<h1 id=\"hero-banner-title-0wmo89w1\" class=\"hero-banner__title col-sm-20 col-xl-18\" region_id=\"herowhite\" section=\"main\">"
+                ],
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "069c8311b012a4dd0c4857481d7fbb63",
+        "url": "https://bigbank.lv/ru/uznemumiem/kreditlinija-uznemumiem/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "e5f20af95df736b9dfdb11098f6e1678",
+        "url": "https://bigbank.lv/ru/uznemumiem/terminnoguldijums-uznemumiem/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    }
+]

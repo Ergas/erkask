@@ -1,0 +1,164 @@
+[
+    {
+        "id": "df08446ab8179e1f54983e1416f389c6",
+        "url": "https://investor.bigbank.eu/lv/tier-2-24-2034-ii/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Contacts\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"NOSAC\u012aJUMI Inform\u0101cija par subordin\u0113taj\u0101m oblig\u0101cij\u0101m\").",
+                "solved": true,
+                "comments": []
+            },
+            {
+                "type": "No <H1> found",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": null,
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true
+    },
+    {
+        "id": "ab5872080824f65260c2401e02a5b8ba",
+        "url": "https://investor.bigbank.eu/lv/tier-2-25-2035/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Contacts\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"NOSAC\u012aJUMI Inform\u0101cija par subordin\u0113taj\u0101m oblig\u0101cij\u0101m\").",
+                "solved": true,
+                "comments": []
+            },
+            {
+                "type": "No <H1> found",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": null,
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true
+    },
+    {
+        "id": "2f2f01d314b3698e07d138e71a642d41",
+        "url": "https://investor.bigbank.eu/lv/tier2-22-2032/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Contacts\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"NOSAC\u012aJUMI Inform\u0101cija par subordin\u0113taj\u0101m oblig\u0101cij\u0101m\").",
+                "solved": true,
+                "comments": []
+            },
+            {
+                "type": "No <H1> found",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": null,
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true
+    },
+    {
+        "id": "7a7d77e55a79eaccbb49a01a5065117d",
+        "url": "https://investor.bigbank.eu/lv/tier2-22-2033/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Contacts\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"Nosac\u012bjumi Inform\u0101cija par subordin\u0113taj\u0101m oblig\u0101cij\u0101m\").",
+                "solved": true,
+                "comments": []
+            },
+            {
+                "type": "No <H1> found",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": null,
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true
+    },
+    {
+        "id": "2146539cfeeddb6b55f86aa7507589c8",
+        "url": "https://investor.bigbank.eu/lv/tier2-23-2033/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Contacts\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"NOSAC\u012aJUMI Inform\u0101cija par subordin\u0113taj\u0101m oblig\u0101cij\u0101m\").",
+                "solved": true,
+                "comments": []
+            },
+            {
+                "type": "No <H1> found",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": null,
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true
+    },
+    {
+        "id": "b39fda3bc983c8fdeb6d51e01a7cb819",
+        "url": "https://investor.bigbank.eu/lv/tier2-24-2034/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Contacts\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"NOSAC\u012aJUMI Inform\u0101cija par subordin\u0113taj\u0101m oblig\u0101cij\u0101m\").",
+                "solved": true,
+                "comments": []
+            },
+            {
+                "type": "No <H1> found",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": null,
+                "solved": true,
+                "comments": []
+            }
+        ],
+        "solved": true
+    }
+]

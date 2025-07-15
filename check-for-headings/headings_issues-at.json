@@ -1,0 +1,433 @@
+[
+    {
+        "id": "6b754c5a0d30f513f2eb25ed96e90919",
+        "url": "https://bigbank.at/blog/nasdaq-nimmt-bigbank-in-baltic-bond-list-auf/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "f32e60c93412d09547a0913039c59de0",
+        "url": "https://bigbank.at/blog/olympische-sommerspiele/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "9bc3085e58d8f86fae92ef42ab9e6642",
+        "url": "https://bigbank.at/blog/q3-2020/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "56704008528986b34aee77db82c88471",
+        "url": "https://bigbank.at/blog/q3-ergebnisse-2023-bigbank-setzt-wachstumskurs-fort-vermogen-ubersteigt-2-milliarden-euro/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "4947f49143de376e065ca6028611b194",
+        "url": "https://bigbank.at/blog/q3-ergebnisse-kredit-und-einlagenportfolios-der-bigbank-wachsen-weiter-rasant-und-erzielen-gewinne/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "1bdf729ba3d8aea2add0d4dbe4566138",
+        "url": "https://bigbank.at/blog/q12025/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "1461d2f7d9322999b15ea73acdeb7e82",
+        "url": "https://bigbank.at/blog/quellensteuer/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "f41e7a295a3c3dd55e1f9179831148e6",
+        "url": "https://bigbank.at/blog/selfservice-artikel/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "8338f3322ecd23e79209505cf8644165",
+        "url": "https://bigbank.at/blog/sparbuch/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "8f862e1368bcb27bf12fbeea4106a251",
+        "url": "https://bigbank.at/blog/sparen-fur-das-alter-wer-fruh-beginnt-hat-spater-mehr-davon/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "6ac1bdf0c4e0f416d8385aef1216a203",
+        "url": "https://bigbank.at/blog/sparen-sicherheit/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "68fe942d9136fada0421c4a4c6763095",
+        "url": "https://bigbank.at/blog/sparverhalten-umgang-mit-geld/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "9dcc0aa19443630e35ca6a5a7063c7c4",
+        "url": "https://bigbank.at/blog/starkes-zweites-quartal-fur-die-bigbank/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "15fc6d94714c4b8e58a36fc8eec058f9",
+        "url": "https://bigbank.at/blog/steigende-inflation/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "b22f09d448a6ef6dfd10a8409d2b75f7",
+        "url": "https://bigbank.at/blog/tagesgeld-blog/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "71018d911f8f1455c4087a65d0be6c47",
+        "url": "https://bigbank.at/blog/turbulente-zeiten/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "b25ae6bd1ecc2178dd59cd8f15b738b3",
+        "url": "https://bigbank.at/blog/urlaub-sparen/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "70deade8ed4b5f0463eb39b7ea494287",
+        "url": "https://bigbank.at/blog/vermoegensaufbau/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "e53d4e2966f49bbbc84c36fc7d816324",
+        "url": "https://bigbank.at/blog/vorsitz-im-eu-rat/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "28e9b160f882b86243345dae43553ea7",
+        "url": "https://bigbank.at/blog/wahrend-corona-geld-gespart-und-nun/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "4585a4a17a2c2ba94126b61099932802",
+        "url": "https://bigbank.at/blog/warum-ihre-anlagen-in-der-eu-geschutzt-sind/",
+        "error": [],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "b2553ebe62a73851c3929d7ba2f56b74",
+        "url": "https://bigbank.at/blog/weihnachten-2020/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "c910d80643b2dbf52b842f98abea10be",
+        "url": "https://bigbank.at/blog/wie-feiern-bigbanker-weihnachten/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"N\u00e4chster Beitrag\").",
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    },
+    {
+        "id": "ab225b6fe13b39af5161fdc55b34a143",
+        "url": "https://bigbank.at/undefined/test-job/",
+        "error": [
+            {
+                "type": "Hierarchy error",
+                "id": "",
+                "className": "bb-contact-menu__title",
+                "section": "header",
+                "regionId": "",
+                "message": "Heading <h4> (\"Brauchen Sie Hilfe?\") is not in correct hierarchy after <h2> (Id: jobs-ads-section-title-job1; Text: \"What you'll be doing\").",
+                "solved": false,
+                "comments": []
+            },
+            {
+                "type": "No <H1> found",
+                "id": null,
+                "className": null,
+                "section": null,
+                "regionId": null,
+                "message": null,
+                "solved": false,
+                "comments": []
+            }
+        ],
+        "solved": false,
+        "comments": []
+    }
+]
