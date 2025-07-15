@@ -233,6 +233,14 @@ if (empty($urls)) {
     exit(1);
 }
 
+$existingProgress = [];
+if (file_exists($progressFile)) {
+    $existingProgress = json_decode(file_get_contents($progressFile), true) ?: [];
+    $existingPid = $existingProgress['pid'] ?? null;
+} else {
+    $existingPid = null;
+}
+
 foreach ($urls as $url) {
     echo "Checking: $url from main loop\n";
     $normUrl = normalizeUrl($url);
@@ -253,7 +261,9 @@ foreach ($urls as $url) {
     file_put_contents($progressFile, json_encode([
         'processed' => $counter,
         'total' => count($urls),
-        'done' => false
+        'done' => false,
+        'start_url' => $inputUrl,
+        'pid' => $existingPid
     ]));
     if ($counter % $batchSize === 0) {
         file_put_contents($tempFile, json_encode($newIssuesByUrl, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
@@ -313,7 +323,12 @@ if (file_exists($tempFile)) {
 file_put_contents($progressFile, json_encode([
     'processed' => $counter,
     'total' => count($urls),
-    'done' => true
+    'done' => true,
+    'start_url' => $inputUrl,
+    'pid' => $existingPid
 ]));
+if (file_exists($progressFile)) {
+    unlink($progressFile);
+}
 echo "Check complete. See $outFile for results.\n";
 ?>

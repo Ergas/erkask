@@ -26,24 +26,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_url'])) {
     file_put_contents($progressFile, json_encode([
         'processed' => 0,
         'total' => 0,
-        'done' => false
+        'done' => false,
+        'start_url' => $url
     ]));
 
-    $cmd = "nohup php check-headings.php " . escapeshellarg($url) . " " . escapeshellarg($suffix);
+    $cmd = "php check-headings.php " . escapeshellarg($url) . " " . escapeshellarg($suffix);
     if ($single) $cmd .= " $single";
-    shell_exec("$cmd > /dev/null 2>&1 &");
-
-    // Return the suffix to the frontend
+    $fullCmd = "nohup $cmd > /dev/null 2>&1 & echo $!";
+    $pid = (int) shell_exec($fullCmd);
+    file_put_contents($progressFile, json_encode([
+        'processed' => 0,
+        'total' => 0,
+        'done' => false,
+        'start_url' => $url,
+        'pid' => $pid
+    ]));
+    header('Content-Type: application/json');
     echo json_encode(['suffix' => $suffix]);
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_issues_file'])) {
-    $file = isset($_POST['file']) ? $_POST['file'] : null;    if (file_exists($file)) {
-        unlink($file);
-        header('Location: ' . $_SERVER['PHP_SELF']);
-        exit;
+    $file = isset($_POST['file']) ? $_POST['file'] : null;
+    if ($file && preg_match('/^headings_issues-([\w\-]+)\.json$/', $file, $m)) {
+        $suffix = $m[1];
+        $filesToDelete = [
+            $file,
+            "headings_issues_temp-$suffix.json",
+            "progress-$suffix.json",
+        ];
+        foreach ($filesToDelete as $f) {
+            if (file_exists($f)) {
+                unlink($f);
+            }
+        }
     }
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
 }
 
 // Handle POST for error or issue
@@ -387,6 +406,10 @@ foreach ($issues as $issue) {
         <button type="submit" class="btn btn-danger">Delete All Issues</button>
     </form>
 </div>
+<div id="all-progress-panel" style="position:fixed;top:16px;right:16px;z-index:9999;min-width:220px;max-width:320px;display:none;background:#fff;border:1px solid #ccc;padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+    <strong>Ongoing Progress</strong>
+    <ul id="all-progress-list" style="list-style:none;padding-left:0;margin-bottom:0"></ul>
+</div>
 <script>
     window.addEventListener('DOMContentLoaded', reorderIssueCards);
     function markErrorSolved(file, issueId, errorIdx, btn) {
@@ -527,41 +550,62 @@ foreach ($issues as $issue) {
             .then(res => res.json())
             .then(data => {
                 if (progressInterval) clearInterval(progressInterval);
-                // Only add dash if suffix is not empty
-                const progressFile = `progress${data.suffix ? '-' + data.suffix : ''}.json`;
-                progressInterval = setInterval(() => pollProgress(progressFile), 2000);
-                pollProgress(progressFile);
+                window.currentProgressFile = `progress${data.suffix ? '-' + data.suffix : ''}.json`;
+                progressInterval = setInterval(pollAllProgress, 2000);
+                pollAllProgress();
             });
     });
 
-    function pollProgress(progressFile) {
-        fetch(progressFile + '?' + Date.now())
-            .then(res => {
-                if (!res.ok) throw new Error('No progress');
-                return res.json();
-            })
-            .then(progress => {
-                const container = document.getElementById('progress-container');
-                const text = document.getElementById('progress-text');
-                const bar = document.getElementById('progress-bar');
-                if (progress && typeof progress.processed === 'number' && typeof progress.total === 'number') {
-                    const percent = Math.round((progress.processed / progress.total) * 100);
-                    text.textContent = `Processed: ${progress.processed} / ${progress.total} (${percent}%)`;
-                    bar.style.width = percent + '%';
-                    container.style.display = 'flex';
-                    if (progress.done) {
-                        container.style.display = 'none';
-                        clearInterval(progressInterval);
-                        deleteProgressFile(progressFile);
-                        location.reload();
+    function pollAllProgress() {
+        fetch('list-progress.php')
+            .then(res => res.json())
+            .then(list => {
+                // Update Ongoing Progress panel
+                const panel = document.getElementById('all-progress-panel');
+                const ul = document.getElementById('all-progress-list');
+                ul.innerHTML = '';
+                let anyActive = false;
+                list.forEach(item => {
+                    const percent = item.total ? Math.round((item.processed / item.total) * 100) : 0;
+                    const domain = item.domain ? `<br><small style="color:#888">${item.domain}</small>` : '';
+                    const abortBtn = item.pid
+                        ? `<button class="btn btn-sm btn-danger ms-2" onclick="abortProgress('${item.file}')">Abort</button>`
+                        : '';
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${item.file.replace(/^progress-?|\.json$/g, '')}</strong>: ${item.processed} / ${item.total} (${percent}%)${domain} ${abortBtn}`;
+                    ul.appendChild(li);
+
+                    // If this is the current job, update the main progress bar
+                    if (window.currentProgressFile && item.file === window.currentProgressFile) {
+                        updateMainProgressBar(item);
+                        anyActive = true;
                     }
-                } else {
-                    container.style.display = 'none';
+                });
+                panel.style.display = list.length ? 'block' : 'none';
+                if (!anyActive) {
+                    document.getElementById('progress-container').style.display = 'none';
                 }
-            })
-            .catch(() => {
-                document.getElementById('progress-container').style.display = 'none';
             });
+    }
+
+    function updateMainProgressBar(progress) {
+        const container = document.getElementById('progress-container');
+        const text = document.getElementById('progress-text');
+        const bar = document.getElementById('progress-bar');
+        if (progress && typeof progress.processed === 'number' && typeof progress.total === 'number') {
+            const percent = progress.total ? Math.round((progress.processed / progress.total) * 100) : 0;
+            text.textContent = `Processed: ${progress.processed} / ${progress.total} (${percent}%)`;
+            bar.style.width = percent + '%';
+            container.style.display = 'flex';
+            if (progress.done) {
+                container.style.display = 'none';
+                clearInterval(progressInterval);
+                deleteProgressFile(window.currentProgressFile);
+                location.reload();
+            }
+        } else {
+            container.style.display = 'none';
+        }
     }
 
     function deleteProgressFile(progressFile) {
@@ -569,6 +613,46 @@ foreach ($issues as $issue) {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: `file=${encodeURIComponent(progressFile)}`
+        });
+    }
+
+    function updateAllProgressPanel() {
+        fetch('list-progress.php')
+            .then(res => res.json())
+            .then(list => {
+                const panel = document.getElementById('all-progress-panel');
+                const ul = document.getElementById('all-progress-list');
+                ul.innerHTML = '';
+                if (list.length === 0) {
+                    panel.style.display = 'none';
+                    return;
+                }
+                list.forEach(item => {
+                    const percent = Math.round((item.processed / item.total) * 100);
+                    const domain = item.domain ? `<br><small style="color:#888">${item.domain}</small>` : '';
+                    const abortBtn = item.pid
+                        ? `<button class="btn btn-sm btn-danger ms-2" onclick="abortProgress('${item.file}')">Abort</button>`
+                        : '';
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${item.file.replace(/^progress-?|\.json$/g, '')}</strong>: ${item.processed} / ${item.total} (${percent}%)${domain} ${abortBtn}`;
+                    ul.appendChild(li);
+                });
+                panel.style.display = 'block';
+            });
+    }
+    setInterval(updateAllProgressPanel, 1500);
+    updateAllProgressPanel();
+
+    function abortProgress(progressFile) {
+        if (!confirm('Abort this job?')) return;
+        fetch('abort-progress.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `file=${encodeURIComponent(progressFile)}`
+        }).then(() => {
+            if (progressInterval) clearInterval(progressInterval);
+            document.getElementById('progress-container').style.display = 'none';
+            pollAllProgress();
         });
     }
 </script>
