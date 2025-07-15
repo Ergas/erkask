@@ -7,11 +7,13 @@ $batchSize = 50;
 $newIssuesByUrl = [];
 
 $inputUrl = $argv[1];
-$suffix = ($argc >= 3 && preg_match('/^[\w\-]+$/', $argv[2]) && $argv[2] !== '--single') ? '-' . $argv[2] : '';
+$suffix = ($argc >= 3 && preg_match('/^[\w\-]+$/', $argv[2]) && $argv[2] !== '--single') ? $argv[2] : '';
 $singleMode = in_array('--single', $argv, true);
+$dashSuffix = $suffix !== '' ? '-' . $suffix : '';
+$progressFile = __DIR__ . "/progress$dashSuffix.json";
+$outFile = __DIR__ . DIRECTORY_SEPARATOR . "headings_issues$dashSuffix.json";
+$tempFile = __DIR__ . DIRECTORY_SEPARATOR . "headings_issues_temp$dashSuffix.json";
 
-$outFile = __DIR__ . DIRECTORY_SEPARATOR . 'headings_issues' . $suffix . '.json';
-$tempFile = __DIR__ . DIRECTORY_SEPARATOR . 'headings_issues_temp' . $suffix . '.json';
 file_put_contents($tempFile, '');
 
 $prevIssues = file_exists($outFile) ? json_decode(file_get_contents($outFile), true) ?: [] : [];
@@ -248,7 +250,7 @@ foreach ($urls as $url) {
         'solved' => false,
     ];
     $counter++;
-    file_put_contents(__DIR__ . '/progress.json', json_encode([
+    file_put_contents($progressFile, json_encode([
         'processed' => $counter,
         'total' => count($urls),
         'done' => false
@@ -308,7 +310,7 @@ file_put_contents($tempFile, '');
 if (file_exists($tempFile)) {
     unlink($tempFile);
 }
-file_put_contents(__DIR__ . '/progress.json', json_encode([
+file_put_contents($progressFile, json_encode([
     'processed' => $counter,
     'total' => count($urls),
     'done' => true

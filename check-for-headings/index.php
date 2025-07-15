@@ -21,17 +21,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_url'])) {
     $suffix = trim($_POST['new_suffix']);
     $single = !empty($_POST['new_single']) ? '--single' : '';
 
-    // Immediately create/reset progress.json for the spinner
-    file_put_contents(__DIR__ . '/progress.json', json_encode([
+    // Use a unique progress file per suffix
+    $progressFile = __DIR__ . "/progress" . ($suffix !== '' ? "-$suffix" : "") . ".json";
+    file_put_contents($progressFile, json_encode([
         'processed' => 0,
         'total' => 0,
         'done' => false
     ]));
 
-    // Properly escape arguments for shell
     $cmd = "nohup php check-headings.php " . escapeshellarg($url) . " " . escapeshellarg($suffix);
     if ($single) $cmd .= " $single";
     shell_exec("$cmd > /dev/null 2>&1 &");
+
+    // Return the suffix to the frontend
+    echo json_encode(['suffix' => $suffix]);
+    exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_issues_file'])) {
@@ -515,18 +519,23 @@ foreach ($issues as $issue) {
     document.getElementById('add-page-form').addEventListener('submit', function(e) {
         e.preventDefault();
         document.getElementById('progress-container').style.display = 'flex';
+        const suffix = document.getElementById('new_suffix').value;
         fetch('', {
             method: 'POST',
             body: new FormData(this)
-        }).then(() => {
-            if (progressInterval) clearInterval(progressInterval);
-            progressInterval = setInterval(pollProgress, 2000);
-            pollProgress();
-        });
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (progressInterval) clearInterval(progressInterval);
+                // Only add dash if suffix is not empty
+                const progressFile = `progress${data.suffix ? '-' + data.suffix : ''}.json`;
+                progressInterval = setInterval(() => pollProgress(progressFile), 2000);
+                pollProgress(progressFile);
+            });
     });
 
-    function pollProgress() {
-        fetch('progress.json?' + Date.now())
+    function pollProgress(progressFile) {
+        fetch(progressFile + '?' + Date.now())
             .then(res => {
                 if (!res.ok) throw new Error('No progress');
                 return res.json();
@@ -543,6 +552,7 @@ foreach ($issues as $issue) {
                     if (progress.done) {
                         container.style.display = 'none';
                         clearInterval(progressInterval);
+                        deleteProgressFile(progressFile);
                         location.reload();
                     }
                 } else {
@@ -552,6 +562,14 @@ foreach ($issues as $issue) {
             .catch(() => {
                 document.getElementById('progress-container').style.display = 'none';
             });
+    }
+
+    function deleteProgressFile(progressFile) {
+        fetch('delete-progress.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `file=${encodeURIComponent(progressFile)}`
+        });
     }
 </script>
 </body>
