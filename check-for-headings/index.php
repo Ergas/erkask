@@ -510,6 +510,8 @@ foreach ($issues as $issue) {
         errors.forEach(err => container.appendChild(err));
     }
 
+    let progressInterval = null;
+
     document.getElementById('add-page-form').addEventListener('submit', function(e) {
         e.preventDefault();
         document.getElementById('progress-container').style.display = 'flex';
@@ -517,6 +519,8 @@ foreach ($issues as $issue) {
             method: 'POST',
             body: new FormData(this)
         }).then(() => {
+            if (progressInterval) clearInterval(progressInterval);
+            progressInterval = setInterval(pollProgress, 2000);
             pollProgress();
         });
     });
@@ -549,8 +553,6 @@ foreach ($issues as $issue) {
                 document.getElementById('progress-container').style.display = 'none';
             });
     }
-    const progressInterval = setInterval(pollProgress, 2000);
-    pollProgress();
 </script>
 </body>
 </html>
