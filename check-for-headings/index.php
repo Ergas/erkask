@@ -281,6 +281,7 @@ foreach ($issues as $issue) {
             <?php endforeach; ?>
         </select>
     </form>
+    <button id="collapse-solved-btn" class="btn btn-secondary mb-3">Collapse All Solved Issues</button>
     <div id="issues-list">
         <?php if ($selected): ?>
 
@@ -655,6 +656,13 @@ foreach ($issues as $issue) {
             pollAllProgress();
         });
     }
+    document.getElementById('collapse-solved-btn').addEventListener('click', function() {
+        const solvedCards = document.querySelectorAll('.url-card.solved');
+        solvedCards.forEach(card => {
+            card.style.display = (card.style.display === 'none') ? '' : 'none';
+        });
+        this.textContent = this.textContent.includes('Collapse') ? 'Expand All Solved Issues' : 'Collapse All Solved Issues';
+    });
 </script>
 </body>
 </html>
