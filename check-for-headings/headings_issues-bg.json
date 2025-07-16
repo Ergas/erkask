@@ -15,11 +15,16 @@
                     "<h1 class=\"hero-banner-slider-v2__slide__content__title m-b-0 m-b-md-20\" region_id=\"section_129\" section=\"main\">",
                     "<h1 class=\"hero-banner-slider-v2__slide__content__title m-b-0 m-b-md-20\" region_id=\"section_129\" section=\"main\">"
                 ],
-                "solved": false,
-                "comments": []
+                "solved": true,
+                "comments": [
+                    {
+                        "text": "Duplicate",
+                        "timestamp": "2025-07-16 10:16:20"
+                    }
+                ]
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -58,11 +63,16 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h1> (Id: no-id; Text: \"\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0438 \u043d\u043e\u0432\u0438\u043d\u0438\").",
-                "solved": false,
-                "comments": []
+                "solved": true,
+                "comments": [
+                    {
+                        "text": "Duplicate",
+                        "timestamp": "2025-07-16 10:16:27"
+                    }
+                ]
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -76,11 +86,16 @@
                 "section": "main",
                 "regionId": "section_120",
                 "message": "Heading <h3> (\"\u041d\u044f\u043c\u0430 \u043d\u0430\u043c\u0435\u0440\u0435\u043d \u0440\u0435\u0437\u0443\u043b\u0442\u0430\u0442\") is not in correct hierarchy after <h1> (Id: section_120; Text: \"\u0417\u0434\u0440\u0430\u0432\u0435\u0439\u0442\u0435, \u043a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\").",
-                "solved": false,
-                "comments": []
+                "solved": true,
+                "comments": [
+                    {
+                        "text": "Duplicate, FAQHub",
+                        "timestamp": "2025-07-16 10:17:25"
+                    }
+                ]
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -136,11 +151,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h1> (Id: no-id; Text: \"\u041f\u0440\u0430\u0432\u043d\u0438 \u0434\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0438\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -182,11 +197,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -200,11 +215,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -218,11 +233,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -236,11 +251,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -254,11 +269,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -272,11 +287,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -290,11 +305,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -308,11 +323,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -326,11 +341,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -344,11 +359,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -362,11 +377,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -380,11 +395,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -398,11 +413,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -416,11 +431,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -434,11 +449,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -452,11 +467,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -470,11 +485,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -488,11 +503,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -506,11 +521,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -524,11 +539,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -542,11 +557,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -560,11 +575,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -578,11 +593,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -596,11 +611,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -614,11 +629,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -632,11 +647,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     },
     {
@@ -650,11 +665,11 @@
                 "section": "header",
                 "regionId": "",
                 "message": "Heading <h4> (\"\u041a\u0430\u043a \u043c\u043e\u0436\u0435\u043c \u0434\u0430 \u043f\u043e\u043c\u043e\u0433\u043d\u0435\u043c?\") is not in correct hierarchy after <h2> (Id: no-id; Text: \"\u0421\u043b\u0435\u0434\u0432\u0430\").",
-                "solved": false,
+                "solved": true,
                 "comments": []
             }
         ],
-        "solved": false,
+        "solved": true,
         "comments": []
     }
 ]
