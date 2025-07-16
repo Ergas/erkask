@@ -78,7 +78,7 @@ $results = $selected ? loadResults($selected) : [];
     <form class="mb-4" id="find-elements-form" method="post">
         <div class="row g-2 align-items-end">
             <div class="col-md-4">
-                <label for="keyword" class="form-label">Keyword:</label>
+                <label for="keyword" class="form-label">Keyword (class, id, or data-block):</label>
                 <input type="text" class="form-control" id="keyword" name="keyword" required>
             </div>
             <div class="col-md-3">
