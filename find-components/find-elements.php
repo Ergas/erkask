@@ -1,14 +1,14 @@
 <?php
 if ($argc < 3) {
-    echo "Usage: php find-elements.php <keyword> <url> [suffix]\n";
+    echo "Usage: php find-elements.php <keyword> <url> [suffix] --single --skip-slug=<SLUG>\n";
     exit(1);
 }
 $keyword = strtolower($argv[1]);
 $inputUrl = $argv[2];
 $suffix = ($argc >= 4 && preg_match('/^[\w\-]+$/', $argv[3])) ? $argv[3] : '';
 $outFile = __DIR__ . '/elements_found' . ($suffix ? "-$suffix" : "") . '.json';
-
 $progressFile = __DIR__ . '/progress' . ($suffix ? "-$suffix" : "") . '.json';
+$checkedFile = __DIR__ . '/checked-urls' . ($suffix ? "-$suffix" : "") . '.tmp';
 
 // Initialize progress file
 file_put_contents($progressFile, json_encode([
@@ -18,6 +18,51 @@ file_put_contents($progressFile, json_encode([
     'start_url' => $inputUrl,
     'pid' => null,
 ]));
+
+$skipSlug = '';
+foreach ($argv as $arg) {
+    if (preg_match('/^--skip-slug=(.+)$/', $arg, $m)) {
+        $skipSlug = $m[1];
+    }
+}
+
+function normalizeUrl($url) {
+    $parts = parse_url(trim($url));
+    if (!isset($parts['host'])) return '';
+    $scheme = isset($parts['scheme']) ? strtolower($parts['scheme']) : 'https';
+    $host = strtolower($parts['host']);
+    $path = isset($parts['path']) ? rtrim($parts['path'], '/\\') : '';
+    // Remove default index, fragments, and trailing slashes
+    $normalized = $scheme . '://' . $host . ($path ? '/' . ltrim($path, '/') : '');
+    return $normalized;
+}
+
+function isUrlChecked($url, $checkedFile) {
+    $normalized = normalizeUrl($url);
+    if (!file_exists($checkedFile)) return false;
+    $fh = fopen($checkedFile, 'r');
+    while (($line = fgets($fh)) !== false) {
+        if (trim($line) === $normalized) {
+            fclose($fh);
+            return true;
+        }
+    }
+    fclose($fh);
+    return false;
+}
+
+function markUrlChecked($url, $checkedFile) {
+    $normalized = normalizeUrl($url);
+    file_put_contents($checkedFile, $normalized . "\n", FILE_APPEND | LOCK_EX);
+}
+
+function shouldSkipUrl($url, $skipSlug) {
+    if (!$skipSlug) return false;
+    $parts = parse_url($url);
+    if (!isset($parts['path'])) return false;
+    // Match /slug or /slug/ at the start of the path
+    return preg_match('#^/' . preg_quote($skipSlug, '#') . '(/|$)#i', $parts['path']);
+}
 
 function fetchPage($url) {
     $ch = curl_init($url);
@@ -93,12 +138,15 @@ function isInternal($base, $url) {
 }
 
 function crawlSite($startUrl) {
+    global $checkedFile;
     $visited = [];
     $queue = [$startUrl];
     while ($queue) {
         $url = array_shift($queue);
-        if (isset($visited[$url])) continue;
-        $visited[$url] = true;
+        $norm = normalizeUrl($url);
+        if (isset($visited[$norm]) || isUrlChecked($url, $checkedFile)) continue;
+        $visited[$norm] = true;
+        markUrlChecked($url, $checkedFile);
         yield $url;
         $html = fetchPage($url);
         if ($html === false) continue;
@@ -108,8 +156,11 @@ function crawlSite($startUrl) {
         foreach ($xpath->query('//a[@href]') as $a) {
             $href = $a->getAttribute('href');
             $abs = filter_var($href, FILTER_VALIDATE_URL) ? $href : rtrim(getDomain($url), '/') . '/' . ltrim($href, '/');
-            if (isInternal($startUrl, $abs) && !isset($visited[$abs])) {
-                $queue[] = $abs;
+            if (isInternal($startUrl, $abs)) {
+                $absNorm = normalizeUrl($abs);
+                if (!isset($visited[$absNorm]) && !isUrlChecked($abs, $checkedFile)) {
+                    $queue[] = $abs;
+                }
             }
         }
         unset($dom, $xpath, $html);
@@ -132,13 +183,23 @@ $result = [
 
 $singleMode = in_array('--single', $argv, true);
 
+$urls = [];
+
 if ($singleMode) {
     $urls = [$inputUrl];
 } elseif (preg_match('/sitemap\.xml$/i', $inputUrl)) {
-    $urls = getUrlsFromSitemap($inputUrl);
+    if (preg_match('/sitemap\.xml$/i', $inputUrl)) {
+        $allUrls = getUrlsFromSitemap($inputUrl);
+        $urls = [];
+        foreach ($allUrls as $url) {
+            if (shouldSkipUrl($url, $skipSlug)) continue;
+            $urls[] = $url;
+        }
+    }
 } else {
     $urls = [];
     foreach (crawlSite($inputUrl) as $url) {
+        if (shouldSkipUrl($url, $skipSlug)) continue;
         $urls[] = $url;
     }
 }
@@ -160,8 +221,17 @@ file_put_contents($progressFile, json_encode([
     'pid' => $existingPid ?? getmypid()
 ]));
 
+$alreadyProcessed = [];
+
 // Now loop over $urls and find elements as before
 foreach ($urls as $url) {
+    $norm = normalizeUrl($url);
+    if (isset($alreadyProcessed[$norm]) || isUrlChecked($url, $checkedFile)) {
+        continue; // Skip duplicate or already checked URL
+    }
+    $alreadyProcessed[$norm] = true;
+    markUrlChecked($url, $checkedFile);
+
     $html = fetchPage($url);
     echo "Fetching: $url\n";
     if (!$html) continue;
@@ -215,5 +285,7 @@ sleep(5);
 if (file_exists($progressFile)) {
     unlink($progressFile);
 }
+if (file_exists($checkedFile)) {
+    unlink($checkedFile);
+}
 echo "Done. See $outFile\n";
-
