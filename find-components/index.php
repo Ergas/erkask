@@ -92,8 +92,8 @@ $results = $selected ? loadResults($selected) : [];
                 <input type="text" class="form-control" id="suffix" name="suffix" pattern="^[\w\-]+$" required>
             </div>
             <div class="col-md-2">
-                <label for="skip_slug" class="form-label">Skip Slug:</label>
-                <input type="text" class="form-control" id="skip_slug" name="skip_slug" pattern="^[\w\-]+$">
+                <label for="skip_slug" class="form-label">Skip Slug (comma-separated):</label>
+                <input type="text" class="form-control" id="skip_slug" name="skip_slug" pattern="^[\w\-, ]*$">
             </div>
             <div class="col-md-2">
                 <div class="form-check">

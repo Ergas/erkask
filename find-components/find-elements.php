@@ -19,10 +19,10 @@ file_put_contents($progressFile, json_encode([
     'pid' => null,
 ]));
 
-$skipSlug = '';
+$skipSlugs = [];
 foreach ($argv as $arg) {
     if (preg_match('/^--skip-slug=(.+)$/', $arg, $m)) {
-        $skipSlug = $m[1];
+        $skipSlugs = array_filter(array_map('trim', explode(',', $m[1])));
     }
 }
 
@@ -56,12 +56,16 @@ function markUrlChecked($url, $checkedFile) {
     file_put_contents($checkedFile, $normalized . "\n", FILE_APPEND | LOCK_EX);
 }
 
-function shouldSkipUrl($url, $skipSlug) {
-    if (!$skipSlug) return false;
+function shouldSkipUrl($url, $skipSlugs) {
+    if (empty($skipSlugs)) return false;
     $parts = parse_url($url);
     if (!isset($parts['path'])) return false;
-    // Match /slug or /slug/ at the start of the path
-    return preg_match('#^/' . preg_quote($skipSlug, '#') . '(/|$)#i', $parts['path']);
+    foreach ($skipSlugs as $slug) {
+        if (preg_match('#^/' . preg_quote($slug, '#') . '(/|$)#i', $parts['path'])) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function fetchPage($url) {
@@ -192,14 +196,14 @@ if ($singleMode) {
         $allUrls = getUrlsFromSitemap($inputUrl);
         $urls = [];
         foreach ($allUrls as $url) {
-            if (shouldSkipUrl($url, $skipSlug)) continue;
+            if (shouldSkipUrl($url, $skipSlugs)) continue;
             $urls[] = $url;
         }
     }
 } else {
     $urls = [];
     foreach (crawlSite($inputUrl) as $url) {
-        if (shouldSkipUrl($url, $skipSlug)) continue;
+        if (shouldSkipUrl($url, $skipSlugs)) continue;
         $urls[] = $url;
     }
 }
