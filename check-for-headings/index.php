@@ -240,10 +240,8 @@ foreach ($issues as $issue) {
                 <label for="new_suffix" class="form-label">Suffix (ee, eu, investor etc):</label>
                 <input type="text" class="form-control" id="new_suffix" name="new_suffix" pattern="^[\w\-]+$" required>
             </div>
-            <div class="col-md-2">
-                <label for="new_skip_slug" class="form-label">Skip Slug:</label>
-                <input type="text" class="form-control" id="new_skip_slug" name="new_skip_slug" pattern="^[\w\-]+$">
-            </div>
+            <label for="new_skip_slug" class="form-label">Skip Slugs (comma-separated):</label>
+            <input type="text" class="form-control" id="new_skip_slug" name="new_skip_slug" pattern="^[\w\-, ]*$">
             <div class="col-md-2">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="new_single" name="new_single" value="1">

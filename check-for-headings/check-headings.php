@@ -5,8 +5,7 @@ $counter = 0;
 $batchSize = 50;
 
 $newIssuesByUrl = [];
-$skipSlug = '';
-
+$skipSlugs = [];
 $inputUrl = $argv[1];
 $suffix = ($argc >= 3 && preg_match('/^[\w\-]+$/', $argv[2]) && $argv[2] !== '--single') ? $argv[2] : '';
 $singleMode = in_array('--single', $argv, true);
@@ -23,7 +22,7 @@ $prevIssuesByUrl = [];
 
 foreach ($argv as $arg) {
     if (preg_match('/^--skip-slug=(.+)$/', $arg, $m)) {
-        $skipSlug = $m[1];
+        $skipSlugs = array_filter(array_map('trim', explode(',', $m[1])));
     }
 }
 foreach ($prevIssues as $issue) {
@@ -32,12 +31,16 @@ foreach ($prevIssues as $issue) {
 }
 
 // Helper to check if URL should be skipped
-function shouldSkipUrl($url, $skipSlug) {
-    if (!$skipSlug) return false;
+function shouldSkipUrl($url, $skipSlugs) {
+    if (empty($skipSlugs)) return false;
     $parts = parse_url($url);
     if (!isset($parts['path'])) return false;
-    // Match /slug or /slug/ at the start of the path
-    return preg_match('#^/' . preg_quote($skipSlug, '#') . '(/|$)#i', $parts['path']);
+    foreach ($skipSlugs as $slug) {
+        if (preg_match('#^/' . preg_quote($slug, '#') . '(/|$)#i', $parts['path'])) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // Helper functions for checked URLs
