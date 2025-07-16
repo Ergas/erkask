@@ -78,11 +78,11 @@ $results = $selected ? loadResults($selected) : [];
     <form class="mb-4" id="find-elements-form" method="post">
         <div class="row g-2 align-items-end">
             <div class="col-md-4">
-                <label for="keyword" class="form-label">Keyword (class, id, or data-block):</label>
+                <label for="keyword" class="form-label"><span style="color:gray">(Class, id, or data-block)</span></br>Keyword:</label>
                 <input type="text" class="form-control" id="keyword" name="keyword" required>
             </div>
             <div class="col-md-3">
-                <label for="url" class="form-label">URL or Sitemap:</label>
+                <label for="url" class="form-label"><span style="color:gray">(Sitemap recommended, eg https://bigbank.ee/sitemap.xml)</span></br>URL or Sitemap:</label>
                 <input type="url" class="form-control" id="url" name="url" required>
             </div>
             <div class="col-md-2">
