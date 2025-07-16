@@ -42,7 +42,7 @@ $links = [
         <?php endforeach; ?>
     </div>
     <footer class="text-center mt-5 text-muted">
-        &copy; <?= date('Y') ?> Project Home
+        &copy; <?= date('Y') ?> ErKask
     </footer>
 </div>
 </body>
