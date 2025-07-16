@@ -5,6 +5,7 @@ $counter = 0;
 $batchSize = 50;
 
 $newIssuesByUrl = [];
+$skipSlug = '';
 
 $inputUrl = $argv[1];
 $suffix = ($argc >= 3 && preg_match('/^[\w\-]+$/', $argv[2]) && $argv[2] !== '--single') ? $argv[2] : '';
@@ -13,14 +14,50 @@ $dashSuffix = $suffix !== '' ? '-' . $suffix : '';
 $progressFile = __DIR__ . "/progress$dashSuffix.json";
 $outFile = __DIR__ . DIRECTORY_SEPARATOR . "headings_issues$dashSuffix.json";
 $tempFile = __DIR__ . DIRECTORY_SEPARATOR . "headings_issues_temp$dashSuffix.json";
+$checkedFile = __DIR__ . '/checked-headings-urls' . $dashSuffix . '.tmp';
 
 file_put_contents($tempFile, '');
 
 $prevIssues = file_exists($outFile) ? json_decode(file_get_contents($outFile), true) ?: [] : [];
 $prevIssuesByUrl = [];
+
+foreach ($argv as $arg) {
+    if (preg_match('/^--skip-slug=(.+)$/', $arg, $m)) {
+        $skipSlug = $m[1];
+    }
+}
 foreach ($prevIssues as $issue) {
     $normUrl = normalizeUrl($issue['url']);
     $prevIssuesByUrl[$normUrl] = $issue;
+}
+
+// Helper to check if URL should be skipped
+function shouldSkipUrl($url, $skipSlug) {
+    if (!$skipSlug) return false;
+    $parts = parse_url($url);
+    if (!isset($parts['path'])) return false;
+    // Match /slug or /slug/ at the start of the path
+    return preg_match('#^/' . preg_quote($skipSlug, '#') . '(/|$)#i', $parts['path']);
+}
+
+// Helper functions for checked URLs
+function isUrlChecked($url, $checkedFile) {
+    $normalized = normalizeUrl($url);
+    if (!file_exists($checkedFile)) return false;
+    $fh = fopen($checkedFile, 'r');
+    while (($line = fgets($fh)) !== false) {
+        if (trim($line) === $normalized) {
+            fclose($fh);
+            return true;
+        }
+    }
+    fclose($fh);
+    return false;
+}
+
+function markUrlChecked($url, $checkedFile) {
+    $normalized = normalizeUrl($url);
+    file_put_contents($checkedFile, $normalized . "\n", FILE_APPEND | LOCK_EX);
 }
 
 function fetchPage($url) {
@@ -250,10 +287,16 @@ if ($argc < 2 || $argc > 4) {
 if ($singleMode) {
     $urls = [$inputUrl];
 } elseif (preg_match('/sitemap\.xml$/i', $inputUrl)) {
-    $urls = getUrlsFromSitemap($inputUrl);
+    $allUrls = getUrlsFromSitemap($inputUrl);
+    $urls = [];
+    foreach ($allUrls as $url) {
+        if (shouldSkipUrl($url, $skipSlug)) continue;
+        $urls[] = $url;
+    }
 } else {
     $urls = [];
     foreach (crawlSite($inputUrl) as $url) {
+        if (shouldSkipUrl($url, $skipSlug)) continue;
         $urls[] = $url;
     }
 }
@@ -271,9 +314,19 @@ if (file_exists($progressFile)) {
     $existingPid = null;
 }
 
+$alreadyProcessed = [];
+
 foreach ($urls as $url) {
-    echo "Checking: $url from main loop\n";
+    if (shouldSkipUrl($url, $skipSlug)) continue;
+
     $normUrl = normalizeUrl($url);
+    if (isset($alreadyProcessed[$normUrl]) || isUrlChecked($url, $checkedFile)) {
+        continue; // Skip duplicate or already checked URL
+    }
+    $alreadyProcessed[$normUrl] = true;
+    markUrlChecked($url, $checkedFile);
+    echo "Checking: $url from main loop\n";
+
     $html = fetchPage($url);
     if (empty($html)) {
         echo "Failed to fetch or empty HTML for $url\n";
@@ -347,9 +400,6 @@ foreach ($prevIssuesByUrl as $url => $prevIssue) {
 
 file_put_contents($outFile, json_encode($mergedIssues, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 file_put_contents($tempFile, '');
-if (file_exists($tempFile)) {
-    unlink($tempFile);
-}
 file_put_contents($progressFile, json_encode([
     'processed' => $counter,
     'total' => count($urls),
@@ -357,8 +407,15 @@ file_put_contents($progressFile, json_encode([
     'start_url' => $inputUrl,
     'pid' => $existingPid
 ]));
+sleep(5);
+if (file_exists($tempFile)) {
+    unlink($tempFile);
+}
 if (file_exists($progressFile)) {
     unlink($progressFile);
+}
+if (file_exists($checkedFile)) {
+    unlink($checkedFile);
 }
 echo "Check complete. See $outFile for results.\n";
 ?>

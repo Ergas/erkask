@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_url'])) {
     }
     $suffix = trim($_POST['new_suffix']);
     $single = !empty($_POST['new_single']) ? '--single' : '';
+    $skipSlug = !empty($_POST['new_skip_slug']) ? trim($_POST['new_skip_slug']) : '';
 
     $progressFile = __DIR__ . "/progress" . ($suffix !== '' ? "-$suffix" : "") . ".json";
     file_put_contents($progressFile, json_encode([
@@ -33,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_url'])) {
 
     $cmd = "php check-headings.php " . escapeshellarg($url) . " " . escapeshellarg($suffix);
     if ($single) $cmd .= " $single";
+    if ($skipSlug) $cmd .= " --skip-slug=" . escapeshellarg($skipSlug);
     $fullCmd = "nohup $cmd > /dev/null 2>&1 & echo $!";
     $pid = (int) shell_exec($fullCmd);
     file_put_contents($progressFile, json_encode([
@@ -239,13 +241,15 @@ foreach ($issues as $issue) {
                 <input type="text" class="form-control" id="new_suffix" name="new_suffix" pattern="^[\w\-]+$" required>
             </div>
             <div class="col-md-2">
+                <label for="new_skip_slug" class="form-label">Skip Slug:</label>
+                <input type="text" class="form-control" id="new_skip_slug" name="new_skip_slug" pattern="^[\w\-]+$">
+            </div>
+            <div class="col-md-2">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="new_single" name="new_single" value="1">
                     <label class="form-check-label" for="new_single">Single page</label>
+                    <button type="submit" class="btn btn-primary">Add page</button>
                 </div>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary">Add page</button>
             </div>
         </div>
     </form>
