@@ -16,12 +16,13 @@ function saveIssues($filename, $data) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_url'])) {
     $url = trim($_POST['new_url']);
     if (empty($_POST['new_suffix'])) {
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'Suffix is required']);
         exit;
     }
     $suffix = trim($_POST['new_suffix']);
     $single = !empty($_POST['new_single']) ? '--single' : '';
 
-    // Use a unique progress file per suffix
     $progressFile = __DIR__ . "/progress" . ($suffix !== '' ? "-$suffix" : "") . ".json";
     file_put_contents($progressFile, json_encode([
         'processed' => 0,
@@ -45,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_url'])) {
     echo json_encode(['suffix' => $suffix]);
     exit;
 }
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_issues_file'])) {
     $file = isset($_POST['file']) ? $_POST['file'] : null;
     if ($file && preg_match('/^headings_issues-([\w\-]+)\.json$/', $file, $m)) {
@@ -183,6 +183,7 @@ foreach ($issues as $issue) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <base href="<?= rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') ?>/">
     <title>Heading Issues JSON Viewer<?= $ending ? " - $ending" : "" ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -223,6 +224,9 @@ foreach ($issues as $issue) {
 </head>
 <body>
 <div class="container py-4">
+    <div class="container mt-3 mb-4">
+        <a href="../index.php" class="btn btn-outline-primary">&larr; Back to Home</a>
+    </div>
     <h1 class="mb-4">Heading Issues JSON Viewer<?= $ending ? " - $ending" : "" ?></h1>
     <form class="mb-4" id="add-page-form" method="post">
         <div class="row g-2 align-items-end">
@@ -561,19 +565,29 @@ foreach ($issues as $issue) {
         fetch('list-progress.php')
             .then(res => res.json())
             .then(list => {
-                // Update Ongoing Progress panel
                 const panel = document.getElementById('all-progress-panel');
                 const ul = document.getElementById('all-progress-list');
                 ul.innerHTML = '';
                 let anyActive = false;
                 list.forEach(item => {
                     const percent = item.total ? Math.round((item.processed / item.total) * 100) : 0;
-                    const domain = item.domain ? `<br><small style="color:#888">${item.domain}</small>` : '';
+                    let domain = '';
+                    if (item.domain) {
+                        domain = item.domain;
+                    } else if (item.start_url) {
+                        try {
+                            domain = new URL(item.start_url).hostname;
+                        } catch (e) {
+                            domain = item.start_url;
+                        }
+                    }
+                    const domainHtml = domain ? `<br><small style="color:#888">${domain}</small>` : '';
                     const abortBtn = item.pid
                         ? `<button class="btn btn-sm btn-danger ms-2" onclick="abortProgress('${item.file}')">Abort</button>`
                         : '';
+                    const suffix = item.file.replace(/^.*\/progress-/, '').replace(/\.json$/, '');
                     const li = document.createElement('li');
-                    li.innerHTML = `<strong>${item.file.replace(/^progress-?|\.json$/g, '')}</strong>: ${item.processed} / ${item.total} (${percent}%)${domain} ${abortBtn}`;
+                    li.innerHTML = `<strong>${suffix}</strong>: ${item.processed} / ${item.total} (${percent}%)${domainHtml} ${abortBtn}`;
                     ul.appendChild(li);
 
                     // If this is the current job, update the main progress bar
@@ -629,13 +643,25 @@ foreach ($issues as $issue) {
                     return;
                 }
                 list.forEach(item => {
-                    const percent = Math.round((item.processed / item.total) * 100);
-                    const domain = item.domain ? `<br><small style="color:#888">${item.domain}</small>` : '';
+                    const percent = item.total ? Math.round((item.processed / item.total) * 100) : 0;
+                    // Extract domain from start_url if domain is missing
+                    let domain = '';
+                    if (item.domain) {
+                        domain = item.domain;
+                    } else if (item.start_url) {
+                        try {
+                            domain = new URL(item.start_url).hostname;
+                        } catch (e) {
+                            domain = item.start_url;
+                        }
+                    }
+                    const domainHtml = domain ? `<br><small style="color:#888">${domain}</small>` : '';
                     const abortBtn = item.pid
                         ? `<button class="btn btn-sm btn-danger ms-2" onclick="abortProgress('${item.file}')">Abort</button>`
                         : '';
+                    let suffix = item.file.replace(/^.*\/progress-/, '').replace(/\.json$/, '');
                     const li = document.createElement('li');
-                    li.innerHTML = `<strong>${item.file.replace(/^progress-?|\.json$/g, '')}</strong>: ${item.processed} / ${item.total} (${percent}%)${domain} ${abortBtn}`;
+                    li.innerHTML = `<strong>${suffix}</strong>: ${item.processed} / ${item.total} (${percent}%)${domainHtml} ${abortBtn}`;
                     ul.appendChild(li);
                 });
                 panel.style.display = 'block';

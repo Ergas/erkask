@@ -43,11 +43,41 @@ function fetchPage($url) {
 
 function getUrlsFromSitemap($sitemapUrl) {
     $urls = [];
+    $xmlContent = @file_get_contents($sitemapUrl);
+    if ($xmlContent === false) return [];
     $reader = new XMLReader();
-    if (!$reader->open($sitemapUrl)) return [];
+    if (!$reader->XML($xmlContent)) return [];
+    $isIndex = false;
     while ($reader->read()) {
-        if ($reader->nodeType == XMLReader::ELEMENT && $reader->name == 'loc') {
-            $urls[] = $reader->readString();
+        if ($reader->nodeType == XMLReader::ELEMENT) {
+            $localName = $reader->localName;
+            if ($localName === 'sitemapindex') {
+                $isIndex = true;
+            }
+            if ($isIndex && $localName === 'sitemap') {
+                // In sitemap index: recurse into each <loc> under <sitemap>
+                while ($reader->read()) {
+                    if ($reader->nodeType == XMLReader::ELEMENT && $reader->localName == 'loc') {
+                        $loc = $reader->readString();
+                        $urls = array_merge($urls, getUrlsFromSitemap($loc));
+                        break;
+                    }
+                    if ($reader->nodeType == XMLReader::END_ELEMENT && $reader->localName == 'sitemap') {
+                        break;
+                    }
+                }
+            } elseif (!$isIndex && $localName === 'url') {
+                // In regular sitemap: collect <loc> under <url>
+                while ($reader->read()) {
+                    if ($reader->nodeType == XMLReader::ELEMENT && $reader->localName == 'loc') {
+                        $urls[] = $reader->readString();
+                        break;
+                    }
+                    if ($reader->nodeType == XMLReader::END_ELEMENT && $reader->localName == 'url') {
+                        break;
+                    }
+                }
+            }
         }
     }
     $reader->close();
