@@ -125,6 +125,11 @@ $results = $selected ? loadResults($selected) : [];
             <?php endforeach; ?>
         </select>
     </form>
+    <?php if ($selected && file_exists($selected)): ?>
+        <a href="<?= htmlspecialchars($selected) ?>" download class="btn btn-success mb-3">
+            Download JSON file with results
+        </a>
+    <?php endif; ?>
     <?php if ($selected && $results): ?>
         <p><strong>Last updated:</strong> <?= htmlspecialchars($results['last_updated'] ?? '') ?></p>
         <?php foreach ($results['results'] as $res): ?>
