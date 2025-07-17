@@ -4,7 +4,7 @@ if ($argc < 3) {
     echo "Usage: php find-elements.php <keyword> <url> <suffix> [--single] [--skip-slug=<SLUG>]\n";
     exit(1);
 }
-$keyword = strtolower($argv[1]);
+$keywords = array_map('strtolower', array_map('trim', explode(',', $argv[1])));
 $inputUrl = $argv[2];
 $suffix = ($argc >= 4 && preg_match('/^[\w\-]+$/', $argv[3])) ? $argv[3] : '';
 $outFile = __DIR__ . '/elements_found' . ($suffix ? "-$suffix" : "") . '.json';
@@ -256,17 +256,20 @@ foreach ($urls as $url) {
         $tag = strtolower($el->tagName);
         $id = strtolower($el->getAttribute('id'));
         $class = strtolower($el->getAttribute('class'));
-        if (
-            strpos($tag, $keyword) !== false ||
-            strpos($id, $keyword) !== false ||
-            strpos($class, $keyword) !== false
-        ) {
-            $matches[] = [
-                'tag' => $tag,
-                'id' => $id,
-                'class' => $class,
-                'text' => trim($el->textContent)
-            ];
+        foreach ($keywords as $keyword) {
+            if (
+                strpos($tag, $keyword) !== false ||
+                strpos($id, $keyword) !== false ||
+                strpos($class, $keyword) !== false
+            ) {
+                $matches[] = [
+                    'tag' => $tag,
+                    'id' => $id,
+                    'class' => $class,
+                    'text' => trim($el->textContent)
+                ];
+                break;
+            }
         }
     }
     if ($matches) {
