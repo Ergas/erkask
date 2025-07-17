@@ -255,17 +255,23 @@ foreach ($urls as $url) {
     foreach ($dom->getElementsByTagName('*') as $el) {
         $tag = strtolower($el->tagName);
         $id = strtolower($el->getAttribute('id'));
-        $class = strtolower($el->getAttribute('class'));
+        $classAttr = strtolower($el->getAttribute('class'));
+        $classList = preg_split('/\s+/', $classAttr, -1, PREG_SPLIT_NO_EMPTY);
+
         foreach ($keywords as $keyword) {
-            if (
-                strpos($tag, $keyword) !== false ||
-                strpos($id, $keyword) !== false ||
-                strpos($class, $keyword) !== false
-            ) {
+            $found = false;
+            if (strpos($tag, $keyword) !== false) {
+                $found = true;
+            } elseif ($id && preg_match('/^' . preg_quote($keyword, '/') . '(\b|$)/', $id)) {
+                $found = true;
+            } elseif (in_array($keyword, $classList, true)) {
+                $found = true;
+            }
+            if ($found) {
                 $matches[] = [
                     'tag' => $tag,
                     'id' => $id,
-                    'class' => $class,
+                    'class' => $classAttr,
                     'text' => trim($el->textContent)
                 ];
                 break;
