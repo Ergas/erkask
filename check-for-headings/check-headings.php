@@ -9,6 +9,11 @@ $skipSlugs = [];
 $inputUrl = $argv[1];
 $suffix = ($argc >= 3 && preg_match('/^[\w\-]+$/', $argv[2]) && $argv[2] !== '--single') ? $argv[2] : '';
 $singleMode = in_array('--single', $argv, true);
+if ($suffix === '') {
+    echo "Error: Suffix is required.\n";
+    echo "Usage: php check-headings.php <url> <suffix> [--single] [--skip-slug=<SLUG>]\n";
+    exit(1);
+}
 $dashSuffix = $suffix !== '' ? '-' . $suffix : '';
 $progressFile = __DIR__ . "/progress$dashSuffix.json";
 $outFile = __DIR__ . DIRECTORY_SEPARATOR . "headings_issues$dashSuffix.json";
@@ -283,7 +288,8 @@ function normalizeUrl($url) {
 }
 
 if ($argc < 2 || $argc > 4) {
-    echo "Usage: php check-headings.php <url> [suffix] [--single]\n";
+    echo "Error: Invalid number of arguments.\n";
+    echo "Usage: php check-headings.php <url> [suffix] (--single) (--skip-slug=<SLUG>)\n";
     exit(1);
 }
 

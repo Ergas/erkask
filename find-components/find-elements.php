@@ -1,6 +1,7 @@
 <?php
 if ($argc < 3) {
-    echo "Usage: php find-elements.php <keyword> <url> [suffix] --single --skip-slug=<SLUG>\n";
+    echo "Error: Invalid arguments.\n";
+    echo "Usage: php find-elements.php <keyword> <url> <suffix> [--single] [--skip-slug=<SLUG>]\n";
     exit(1);
 }
 $keyword = strtolower($argv[1]);
@@ -9,6 +10,12 @@ $suffix = ($argc >= 4 && preg_match('/^[\w\-]+$/', $argv[3])) ? $argv[3] : '';
 $outFile = __DIR__ . '/elements_found' . ($suffix ? "-$suffix" : "") . '.json';
 $progressFile = __DIR__ . '/progress' . ($suffix ? "-$suffix" : "") . '.json';
 $checkedFile = __DIR__ . '/checked-urls' . ($suffix ? "-$suffix" : "") . '.tmp';
+
+if ($suffix === '') {
+    echo "Error: Suffix is required.\n";
+    echo "Usage: php find-elements.php <keyword> <url> <suffix> [--single] [--skip-slug=<SLUG>]\n";
+    exit(1);
+}
 
 // Initialize progress file
 file_put_contents($progressFile, json_encode([
