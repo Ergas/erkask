@@ -25,12 +25,16 @@ if (!empty($data['pid'])) {
 // Delete the progress file
 unlink($progressFile);
 
-// Also delete elements_found-<suffix>.json in the same directory
+// Also delete elements_found-<suffix>.json and checked-urls-<suffix>.tmp
 if (preg_match('/progress-([\w\-]+)\.json$/', $file, $m)) {
     $suffix = $m[1];
     $elementsFile = __DIR__ . "/elements_found-$suffix.json";
     if (file_exists($elementsFile)) {
         unlink($elementsFile);
+    }
+    $checkedFile = __DIR__ . "/checked-urls-$suffix.tmp";
+    if (file_exists($checkedFile)) {
+        unlink($checkedFile);
     }
 }
 

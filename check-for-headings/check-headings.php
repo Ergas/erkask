@@ -40,9 +40,12 @@ function shouldSkipUrl($url, $skipSlugs) {
     if (empty($skipSlugs)) return false;
     $parts = parse_url($url);
     if (!isset($parts['path'])) return false;
-    foreach ($skipSlugs as $slug) {
-        if (preg_match('#^/' . preg_quote($slug, '#') . '(/|$)#i', $parts['path'])) {
-            return true;
+    $segments = array_filter(explode('/', $parts['path']));
+    foreach ($segments as $segment) {
+        foreach ($skipSlugs as $slug) {
+            if (strcasecmp($segment, $slug) === 0) {
+                return true;
+            }
         }
     }
     return false;

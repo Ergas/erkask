@@ -1,15 +1,20 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['file'])) exit;
-$file = basename($_POST['file']);
-$progressFile = __DIR__ . 'abort-progress.php/' . $file;
-if (!file_exists($progressFile)) exit;
-$data = json_decode(file_get_contents($progressFile), true);
-if (!empty($data['pid'])) {
-    $pid = (int)$data['pid'];
-    if ($pid > 0) {
-        // Try to kill the process
-        exec("kill $pid");
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['file'])) {
+    $progressFile = $_POST['file'];
+    if (preg_match('/progress-([\w\-]+)\.json$/', $progressFile, $m)) {
+        $suffix = $m[1];
+        $filesToDelete = [
+            $progressFile,
+            __DIR__ . "/headings_issues_temp-$suffix.json",
+            __DIR__ . "/checked-headings-urls-$suffix.tmp",
+        ];
+        foreach ($filesToDelete as $f) {
+            if (file_exists($f)) {
+                unlink($f);
+            }
+        }
     }
+    // Optionally: kill the process if PID is stored
+    exit('OK');
 }
-unlink($progressFile);
-echo 'OK';
+?>
