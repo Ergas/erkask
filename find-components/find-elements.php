@@ -1,7 +1,7 @@
 <?php
 if ($argc < 3) {
     echo "Error: Invalid arguments.\n";
-    echo "Usage: php find-elements.php <keyword> <url> <suffix> [--single] [--skip-slug=<SLUG>]\n";
+    echo "Usage: php find-elements.php <keyword> <url> <suffix> [--single] [--search-id] [--search-class] [--skip-slug=<SLUG>]\n";
     exit(1);
 }
 $keywords = array_map('strtolower', array_map('trim', explode(',', $argv[1])));
@@ -18,6 +18,19 @@ if ($suffix === '') {
     echo "Usage: php find-elements.php <keyword> <url> <suffix> [--single] [--skip-slug=<SLUG>]\n";
     exit(1);
 }
+
+function cleanupFiles() {
+    global $progressFile, $checkedFile;
+    if (file_exists($progressFile)) unlink($progressFile);
+    if (file_exists($checkedFile)) unlink($checkedFile);
+}
+
+if (function_exists('pcntl_signal')) {
+    pcntl_signal(SIGTERM, 'cleanupFiles');
+    pcntl_signal(SIGINT, 'cleanupFiles');
+    pcntl_signal(SIGHUP, 'cleanupFiles');
+}
+
 
 // Initialize progress file
 file_put_contents($progressFile, json_encode([
@@ -222,6 +235,11 @@ if ($singleMode) {
 
 if (empty($urls)) {
     echo "No URLs found to check.\n";
+    cleanupFiles();
+    sleep(15);
+    if(file_exists($outFile)) {
+        unlink($outFile);
+    }
     exit(1);
 }
 
@@ -241,6 +259,7 @@ $alreadyProcessed = [];
 
 // Now loop over $urls and find elements as before
 foreach ($urls as $url) {
+    if (function_exists('pcntl_signal_dispatch')) pcntl_signal_dispatch();
     $norm = normalizeUrl($url);
     if (isset($alreadyProcessed[$norm]) || isUrlChecked($url, $checkedFile)) {
         continue; // Skip duplicate or already checked URL
@@ -294,7 +313,6 @@ foreach ($urls as $url) {
         'pid' => $existingPid ?? getmypid()
     ]));
 }
-
 file_put_contents($outFile, json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 file_put_contents($progressFile, json_encode([
     'processed' => $processed,
@@ -310,5 +328,13 @@ if (file_exists($progressFile)) {
 }
 if (file_exists($checkedFile)) {
     unlink($checkedFile);
+}
+if ($result['results'] === []) {
+    echo "No elements found matching the criteria.\n";
+    cleanupFiles();
+    if(file_exists($outFile)) {
+        unlink($outFile);
+    }
+    exit(0);
 }
 echo "Done. See $outFile\n";
