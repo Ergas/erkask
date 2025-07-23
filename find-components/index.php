@@ -25,6 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['keyword'], $_POST['ur
     $cmd = "php find-elements.php " . escapeshellarg($keyword) . " " . escapeshellarg($url) . " " . escapeshellarg($suffix);
     if ($single) $cmd .= " $single";
     if ($skipSlug) $cmd .= " --skip-slug=" . escapeshellarg($skipSlug);    if ($single) $cmd .= " $single";
+    if (!empty($_POST['search_id'])) $cmd .= " --search-id";
+    if (!empty($_POST['search_class'])) $cmd .= " --search-class";
     $fullCmd = "nohup $cmd > /dev/null 2>&1 & echo $!";
     $pid = (int) shell_exec($fullCmd);
     file_put_contents($progressFile, json_encode([
@@ -82,6 +84,14 @@ $results = $selected ? loadResults($selected) : [];
             <div class="col-md-4">
                 <label for="keyword" class="form-label">Keywords (comma-separated):</label>
                 <input type="text" class="form-control" id="keyword" name="keyword" required>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="search_id" name="search_id" value="1">
+                <label class="form-check-label" for="search_id">Search by id</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="search_class" name="search_class" value="1" checked>
+                <label class="form-check-label" for="search_class">Search by class</label>
             </div>
             <div class="col-md-3">
                 <label for="url" class="form-label">URL or Sitemap:</label>

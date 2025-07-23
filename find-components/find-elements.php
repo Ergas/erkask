@@ -7,6 +7,8 @@ if ($argc < 3) {
 $keywords = array_map('strtolower', array_map('trim', explode(',', $argv[1])));
 $inputUrl = $argv[2];
 $suffix = ($argc >= 4 && preg_match('/^[\w\-]+$/', $argv[3])) ? $argv[3] : '';
+$searchId = in_array('--search-id', $argv, true);
+$searchClass = in_array('--search-class', $argv, true);
 $outFile = __DIR__ . '/elements_found' . ($suffix ? "-$suffix" : "") . '.json';
 $progressFile = __DIR__ . '/progress' . ($suffix ? "-$suffix" : "") . '.json';
 $checkedFile = __DIR__ . '/checked-urls' . ($suffix ? "-$suffix" : "") . '.tmp';
@@ -260,11 +262,9 @@ foreach ($urls as $url) {
 
         foreach ($keywords as $keyword) {
             $found = false;
-            if (strpos($tag, $keyword) !== false) {
+            if ($searchId && $id && preg_match('/^' . preg_quote($keyword, '/') . '(\b|$)/', $id)) {
                 $found = true;
-            } elseif ($id && preg_match('/^' . preg_quote($keyword, '/') . '(\b|$)/', $id)) {
-                $found = true;
-            } elseif (in_array($keyword, $classList, true)) {
+            } elseif ($searchClass && in_array($keyword, $classList, true)) {
                 $found = true;
             }
             if ($found) {
