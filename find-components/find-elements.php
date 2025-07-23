@@ -93,19 +93,29 @@ function shouldSkipUrl($url, $skipSlugs) {
     return false;
 }
 
-function fetchPage($url) {
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'ElementFinderBot/1.0',
-        CURLOPT_TIMEOUT => 10,
-        CURLOPT_SSL_VERIFYPEER => false,
-    ]);
-    $html = curl_exec($ch);
-    curl_close($ch);
+function fetchPage($url, $suffix = '') {
+    $tmpHtmlFile = __DIR__ . '/tmp-html' . ($suffix ? "-$suffix" : "") . '.html';
+    $cmd = "node fetch-html.js " . escapeshellarg($url) . " " . escapeshellarg($tmpHtmlFile);
+    exec($cmd, $output, $ret);
+    if ($ret !== 0 || !file_exists($tmpHtmlFile)) return false;
+    $html = file_get_contents($tmpHtmlFile);
+    unlink($tmpHtmlFile);
     return $html;
 }
+
+//function fetchPage($url) {
+//    $ch = curl_init($url);
+//    curl_setopt_array($ch, [
+//        CURLOPT_RETURNTRANSFER => true,
+//        CURLOPT_FOLLOWLOCATION => true,
+//        CURLOPT_USERAGENT => 'ElementFinderBot/1.0',
+//        CURLOPT_TIMEOUT => 10,
+//        CURLOPT_SSL_VERIFYPEER => false,
+//    ]);
+//    $html = curl_exec($ch);
+//    curl_close($ch);
+//    return $html;
+//}
 
 function getUrlsFromSitemap($sitemapUrl) {
     $urls = [];
