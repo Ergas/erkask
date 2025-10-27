@@ -19,6 +19,10 @@ if (!empty($data['pid'])) {
     $pid = (int)$data['pid'];
     if ($pid > 0) {
         exec("kill $pid");
+        exec("ps -p $pid", $output);
+        if (count($output) > 1) { // header + process line
+            exec("kill -9 $pid");
+        }
     }
 }
 
