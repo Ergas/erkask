@@ -268,6 +268,7 @@ foreach ($urls as $url) {
     markUrlChecked($url, $checkedFile);
 
     $html = fetchPage($url);
+    sleep(3); // Be polite
     echo "Fetching: $url\n";
     if (!$html) continue;
     $dom = new DOMDocument();

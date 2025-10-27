@@ -11,7 +11,7 @@ $suffix = ($argc >= 3 && preg_match('/^[\w\-]+$/', $argv[2]) && $argv[2] !== '--
 $singleMode = in_array('--single', $argv, true);
 if ($suffix === '') {
     echo "Error: Suffix is required.\n";
-    echo "Usage: php check-headings.php <url> <suffix> [--single] [--skip-slug=<SLUG>]\n";
+    echo "Usage: php check-headings.php <url> <suffix> [--single] [--skip-slugs=<SLUG>]\n";
     exit(1);
 }
 $dashSuffix = $suffix !== '' ? '-' . $suffix : '';
@@ -338,6 +338,8 @@ foreach ($urls as $url) {
     $alreadyProcessed[$normUrl] = true;
     markUrlChecked($url, $checkedFile);
     echo "Checking: $url from main loop\n";
+
+    sleep(5);
 
     $html = fetchPage($url);
     if (empty($html)) {
