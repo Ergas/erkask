@@ -164,7 +164,7 @@ foreach ($issues as $issue) {
 $errorTypes = array_keys($errorTypes);
 $selectedType = isset($_GET['type']) ? $_GET['type'] : '';
 
-// Extract ending from filename, e.g. headings_issues-investor.json -> INVESTOR
+// Extract ending from filename, e.g. headings_issues-page.json -> INVESTOR
 $ending = $selected
     ? strtoupper(preg_replace('/^headings_issues-|\.json$/i', '', $selected))
     : '';

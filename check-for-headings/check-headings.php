@@ -72,6 +72,7 @@ function markUrlChecked($url, $checkedFile) {
 }
 
 function fetchPage($url) {
+    sleep(6);
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
