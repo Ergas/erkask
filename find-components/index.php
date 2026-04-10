@@ -1,11 +1,12 @@
 <?php
-$files = glob('elements_found-*.json');
+$files = array_map('basename', glob(__DIR__ . '/elements_found-*.json'));
 sort($files);
-$selected = isset($_GET['file']) ? $_GET['file'] : (isset($files[0]) ? $files[0] : null);
+$selected = isset($_GET['file']) ? basename($_GET['file']) : (isset($files[0]) ? $files[0] : null);
 
 function loadResults($filename) {
-    if (!is_readable($filename)) return [];
-    $json = file_get_contents($filename);
+    $filePath = __DIR__ . '/' . basename($filename);
+    if (!is_readable($filePath)) return [];
+    $json = file_get_contents($filePath);
     return json_decode($json, true) ?: [];
 }
 
@@ -22,11 +23,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['keyword'], $_POST['ur
         'start_url' => $url
     ]));
     $skipSlug = !empty($_POST['skip_slug']) ? trim($_POST['skip_slug']) : '';
-    $cmd = "php find-elements.php " . escapeshellarg($keyword) . " " . escapeshellarg($url) . " " . escapeshellarg($suffix);
-    if ($single) $cmd .= " $single";
-    if ($skipSlug) $cmd .= " --skip-slug=" . escapeshellarg($skipSlug);    if ($single) $cmd .= " $single";
-    if (!empty($_POST['search_id'])) $cmd .= " --search-id";
-    if (!empty($_POST['search_class'])) $cmd .= " --search-class";
+    $cmdParts = [
+        escapeshellarg(PHP_BINARY),
+        escapeshellarg(__DIR__ . '/find-elements.php'),
+        escapeshellarg($keyword),
+        escapeshellarg($url),
+        escapeshellarg($suffix),
+    ];
+    if ($single) $cmdParts[] = $single;
+    if ($skipSlug) $cmdParts[] = '--skip-slug=' . escapeshellarg($skipSlug);
+    if (!empty($_POST['search_id'])) $cmdParts[] = '--search-id';
+    if (!empty($_POST['search_class'])) $cmdParts[] = '--search-class';
+    $cmd = implode(' ', $cmdParts);
     $fullCmd = "nohup $cmd > /dev/null 2>&1 & echo $!";
     $pid = (int) shell_exec($fullCmd);
     file_put_contents($progressFile, json_encode([
@@ -44,7 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['keyword'], $_POST['ur
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_results_file'])) {
     $file = isset($_POST['file']) ? $_POST['file'] : null;
     if ($file && preg_match('/^elements_found-([\w\-]+)\.json$/', $file, $m)) {
-        if (file_exists($file)) unlink($file);
+        $filePath = __DIR__ . '/' . basename($file);
+        if (file_exists($filePath)) unlink($filePath);
     }
     header('Location: ' . $_SERVER['PHP_SELF']);
     exit;
@@ -135,13 +144,24 @@ $results = $selected ? loadResults($selected) : [];
             <?php endforeach; ?>
         </select>
     </form>
-    <?php if ($selected && file_exists($selected)): ?>
+    <?php if ($selected && file_exists(__DIR__ . '/' . $selected)): ?>
         <a href="<?= htmlspecialchars($selected) ?>" download class="btn btn-success mb-3">
             Download JSON file with results
         </a>
     <?php endif; ?>
     <?php if ($selected && $results): ?>
         <p><strong>Last updated:</strong> <?= htmlspecialchars($results['last_updated'] ?? '') ?></p>
+        <?php if (!empty($results['summary'])): ?>
+            <p>
+                <strong>Checked URLs:</strong> <?= (int) ($results['summary']['processed_urls'] ?? 0) ?>
+                <?php if (isset($results['summary']['matched_urls'])): ?>
+                    | <strong>Matched URLs:</strong> <?= (int) $results['summary']['matched_urls'] ?>
+                <?php endif; ?>
+            </p>
+        <?php endif; ?>
+        <?php if (empty($results['results'])): ?>
+            <div class="alert alert-warning">No matching elements were found, but the checked URLs were saved to the JSON file.</div>
+        <?php endif; ?>
         <?php foreach ($results['results'] as $res): ?>
             <div class="card url-card">
                 <div class="card-header bg-primary text-white">
@@ -175,16 +195,15 @@ $results = $selected ? loadResults($selected) : [];
     </form>
 </div>
 <script>
-    const basePath = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
-    function apiUrl(file) {
-        return basePath + file;
+    function getProgressFileName(filePath) {
+        return String(filePath || '').split('/').pop();
     }
+
     let progressInterval = null;
 
     document.getElementById('find-elements-form').addEventListener('submit', function(e) {
         e.preventDefault();
         document.getElementById('progress-container').style.display = 'flex';
-        const suffix = document.getElementById('suffix').value;
         fetch('', {
             method: 'POST',
             body: new FormData(this)
@@ -206,6 +225,7 @@ $results = $selected ? loadResults($selected) : [];
                 const ul = document.getElementById('all-progress-list');
                 ul.innerHTML = '';
                 let anyActive = false;
+                let currentJobVisible = false;
                 list.forEach(item => {
                     const percent = item.total ? Math.round((item.processed / item.total) * 100) : 0;
                     let domain = '';
@@ -228,14 +248,20 @@ $results = $selected ? loadResults($selected) : [];
                     ul.appendChild(li);
 
                     // If this is the current job, update the main progress bar
-                    if (window.currentProgressFile && item.file === window.currentProgressFile) {
+                    if (window.currentProgressFile && getProgressFileName(item.file) === window.currentProgressFile) {
                         updateMainProgressBar(item);
                         anyActive = true;
+                        currentJobVisible = true;
                     }
                 });
                 panel.style.display = list.length ? 'block' : 'none';
                 if (!anyActive) {
                     document.getElementById('progress-container').style.display = 'none';
+                }
+                if (window.currentProgressFile && !currentJobVisible) {
+                    clearInterval(progressInterval);
+                    window.currentProgressFile = null;
+                    location.reload();
                 }
             });
     }
@@ -267,11 +293,9 @@ $results = $selected ? loadResults($selected) : [];
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: `file=${encodeURIComponent(progressFile)}`
         }).then(() => {
-            updateAllProgressPanel();
+            pollAllProgress();
         });
     }
-
-    let previousProgressFiles = [];
 
     function updateAllProgressPanel() {
         fetch('list-progress.php')
@@ -280,10 +304,6 @@ $results = $selected ? loadResults($selected) : [];
                 const panel = document.getElementById('all-progress-panel');
                 const ul = document.getElementById('all-progress-list');
                 ul.innerHTML = '';
-                const currentFiles = list.map(item => item.file);
-
-                const disappeared = previousProgressFiles.filter(f => !currentFiles.includes(f));
-                previousProgressFiles = currentFiles;
 
                 if (list.length === 0) {
                     panel.style.display = 'none';
@@ -308,17 +328,8 @@ $results = $selected ? loadResults($selected) : [];
                         const li = document.createElement('li');
                         li.innerHTML = `<strong>${suffix}</strong>: ${item.processed} / ${item.total} (${percent}%)${domainHtml} ${abortBtn}`;
                         ul.appendChild(li);
-
-                        // If any progress is done, mark for deletion and refresh
-                        if (item.done && !foundDone) {
-                            foundDone = true;
-                            doneFile = item.file;
-                        }
                     });
                     panel.style.display = 'block';
-                }
-                if (disappeared.length > 0) {
-                    deleteProgressFile(doneFile);
                 }
             });
     }

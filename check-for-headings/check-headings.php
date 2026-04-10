@@ -11,7 +11,7 @@ $suffix = ($argc >= 3 && preg_match('/^[\w\-]+$/', $argv[2]) && $argv[2] !== '--
 $singleMode = in_array('--single', $argv, true);
 if ($suffix === '') {
     echo "Error: Suffix is required.\n";
-    echo "Usage: php check-headings.php <url> <suffix> [--single] [--skip-slugs=<SLUG>]\n";
+    echo "Usage: php check-headings.php <url> <suffix> [--single] [--skip-slug=<SLUG>]\n";
     exit(1);
 }
 $dashSuffix = $suffix !== '' ? '-' . $suffix : '';
@@ -20,16 +20,29 @@ $outFile = __DIR__ . DIRECTORY_SEPARATOR . "headings_issues$dashSuffix.json";
 $tempFile = __DIR__ . DIRECTORY_SEPARATOR . "headings_issues_temp$dashSuffix.json";
 $checkedFile = __DIR__ . '/checked-headings-urls' . $dashSuffix . '.tmp';
 
-file_put_contents($tempFile, '');
+file_put_contents($tempFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+file_put_contents($checkedFile, '');
 
 $prevIssues = file_exists($outFile) ? json_decode(file_get_contents($outFile), true) ?: [] : [];
 $prevIssuesByUrl = [];
 
-foreach ($argv as $arg) {
-    if (preg_match('/^--skip-slug=(.+)$/', $arg, $m)) {
-        $skipSlugs = array_filter(array_map('trim', explode(',', $m[1])));
+for ($i = 1; $i < $argc; $i++) {
+    $arg = $argv[$i];
+    if (preg_match('/^--skip-slug=(.*)$/', $arg, $m)) {
+        $skipSlugs = array_merge($skipSlugs, preg_split('/\s*,\s*/', $m[1], -1, PREG_SPLIT_NO_EMPTY));
+        continue;
+    }
+    if ($arg === '--skip-slug' && isset($argv[$i + 1])) {
+        $skipSlugs = array_merge($skipSlugs, preg_split('/\s*,\s*/', $argv[$i + 1], -1, PREG_SPLIT_NO_EMPTY));
+        $i++;
     }
 }
+
+$skipSlugs = array_values(array_unique(array_filter(array_map(function ($slug) {
+    $slug = rawurldecode(trim((string) $slug));
+    return trim($slug, " \t\n\r\0\x0B/");
+}, $skipSlugs), 'strlen')));
+
 foreach ($prevIssues as $issue) {
     $normUrl = normalizeUrl($issue['url']);
     $prevIssuesByUrl[$normUrl] = $issue;
@@ -38,16 +51,27 @@ foreach ($prevIssues as $issue) {
 // Helper to check if URL should be skipped
 function shouldSkipUrl($url, $skipSlugs) {
     if (empty($skipSlugs)) return false;
-    $parts = parse_url($url);
-    if (!isset($parts['path'])) return false;
-    $segments = array_filter(explode('/', $parts['path']));
-    foreach ($segments as $segment) {
-        foreach ($skipSlugs as $slug) {
-            if (strcasecmp($segment, $slug) === 0) {
-                return true;
-            }
+    $path = parse_url($url, PHP_URL_PATH);
+    if ($path === null || $path === false) return false;
+
+    $normalizedPath = trim(rawurldecode($path), '/');
+    if ($normalizedPath === '') return false;
+
+    foreach ($skipSlugs as $slug) {
+        $normalizedSlug = trim(rawurldecode((string) $slug), " \t\n\r\0\x0B/");
+        if ($normalizedSlug === '') {
+            continue;
+        }
+
+        if (preg_match('~(^|/)' . preg_quote($normalizedSlug, '~') . '(/|$)~i', $normalizedPath)) {
+            return true;
+        }
+
+        if (stripos($normalizedPath, $normalizedSlug) !== false) {
+            return true;
         }
     }
+
     return false;
 }
 
@@ -71,8 +95,78 @@ function markUrlChecked($url, $checkedFile) {
     file_put_contents($checkedFile, $normalized . "\n", FILE_APPEND | LOCK_EX);
 }
 
+function loadPersistedIssuesByUrl($file) {
+    if (!file_exists($file)) {
+        return [];
+    }
+
+    $issues = json_decode(file_get_contents($file), true);
+    return is_array($issues) ? $issues : [];
+}
+
+function persistIssuesBatch($tempFile, $issuesByUrl) {
+    if (empty($issuesByUrl)) {
+        return;
+    }
+
+    $persistedIssuesByUrl = loadPersistedIssuesByUrl($tempFile);
+    foreach ($issuesByUrl as $url => $issue) {
+        $persistedIssuesByUrl[$url] = $issue;
+    }
+
+    file_put_contents($tempFile, json_encode($persistedIssuesByUrl, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+}
+
+function mergeIssuesWithPrevious($prevIssuesByUrl, $newIssuesByUrl) {
+    $mergedIssues = [];
+
+    foreach ($newIssuesByUrl as $url => $newIssue) {
+        $prevIssue = $prevIssuesByUrl[$url] ?? null;
+        $mergedIssue = $newIssue;
+        $mergedIssue['solved'] = $prevIssue['solved'] ?? false;
+        $mergedIssue['comments'] = $prevIssue['comments'] ?? [];
+        $prevErrors = $prevIssue['error'] ?? [];
+        $newErrors = $newIssue['error'] ?? [];
+        $mergedErrors = [];
+        $prevErrorMap = [];
+
+        foreach ($prevErrors as $err) {
+            $key = md5(json_encode([$err['type'], $err['id'], $err['message']]));
+            $prevErrorMap[$key] = $err;
+        }
+
+        foreach ($newErrors as $err) {
+            $key = md5(json_encode([$err['type'], $err['id'], $err['message']]));
+            if (isset($prevErrorMap[$key])) {
+                $err['solved'] = $prevErrorMap[$key]['solved'] ?? false;
+                $err['comments'] = $prevErrorMap[$key]['comments'] ?? [];
+                unset($prevErrorMap[$key]);
+            } else {
+                $err['solved'] = false;
+                $err['comments'] = [];
+            }
+            $mergedErrors[] = $err;
+        }
+
+        foreach ($prevErrorMap as $err) {
+            $mergedErrors[] = $err;
+        }
+
+        $mergedIssue['error'] = $mergedErrors;
+        $mergedIssues[] = $mergedIssue;
+    }
+
+    foreach ($prevIssuesByUrl as $url => $prevIssue) {
+        if (!isset($newIssuesByUrl[$url])) {
+            $mergedIssues[] = $prevIssue;
+        }
+    }
+
+    return $mergedIssues;
+}
+
 function fetchPage($url) {
-    sleep(6);
+    sleep(3);
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
@@ -255,7 +349,7 @@ function isInternal($base, $url) {
         (isset($urlParts['port']) ? $urlParts['port'] : null) === (isset($baseParts['port']) ? $baseParts['port'] : null);
 }
 
-function crawlSite($startUrl) {
+function crawlSite($startUrl, $skipSlugs = []) {
     $visited = [];
     $queue = [$startUrl];
 
@@ -263,6 +357,11 @@ function crawlSite($startUrl) {
         $url = array_shift($queue);
         if (isset($visited[$url])) continue;
         $visited[$url] = true;
+
+        if (shouldSkipUrl($url, $skipSlugs)) {
+            continue;
+        }
+
         yield $url;
 
         $html = fetchPage($url);
@@ -273,7 +372,7 @@ function crawlSite($startUrl) {
         foreach ($xpath->query('//a[@href]') as $a) {
             $href = $a->getAttribute('href');
             $abs = filter_var($href, FILTER_VALIDATE_URL) ? $href : rtrim(getDomain($url), '/') . '/' . ltrim($href, '/');
-            if (isInternal($startUrl, $abs) && !isset($visited[$abs])) {
+            if (isInternal($startUrl, $abs) && !isset($visited[$abs]) && !shouldSkipUrl($abs, $skipSlugs)) {
                 $queue[] = $abs;
             }
         }
@@ -303,13 +402,13 @@ if ($singleMode) {
     $allUrls = getUrlsFromSitemap($inputUrl);
     $urls = [];
     foreach ($allUrls as $url) {
-        if (shouldSkipUrl($url, $skipSlug)) continue;
+        if (shouldSkipUrl($url, $skipSlugs)) continue;
         $urls[] = $url;
     }
 } else {
     $urls = [];
-    foreach (crawlSite($inputUrl) as $url) {
-        if (shouldSkipUrl($url, $skipSlug)) continue;
+    foreach (crawlSite($inputUrl, $skipSlugs) as $url) {
+        if (shouldSkipUrl($url, $skipSlugs)) continue;
         $urls[] = $url;
     }
 }
@@ -330,7 +429,7 @@ if (file_exists($progressFile)) {
 $alreadyProcessed = [];
 
 foreach ($urls as $url) {
-    if (shouldSkipUrl($url, $skipSlug)) continue;
+    if (shouldSkipUrl($url, $skipSlugs)) continue;
 
     $normUrl = normalizeUrl($url);
     if (isset($alreadyProcessed[$normUrl]) || isUrlChecked($url, $checkedFile)) {
@@ -340,7 +439,7 @@ foreach ($urls as $url) {
     markUrlChecked($url, $checkedFile);
     echo "Checking: $url from main loop\n";
 
-    sleep(5);
+    sleep(3);
 
     $html = fetchPage($url);
     if (empty($html)) {
@@ -364,57 +463,20 @@ foreach ($urls as $url) {
         'pid' => $existingPid
     ]));
     if ($counter % $batchSize === 0) {
-        file_put_contents($tempFile, json_encode($newIssuesByUrl, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        persistIssuesBatch($tempFile, $newIssuesByUrl);
         $newIssuesByUrl = [];
     }
 }
 
 if (!empty($newIssuesByUrl)) {
-    file_put_contents($tempFile, json_encode($newIssuesByUrl, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    persistIssuesBatch($tempFile, $newIssuesByUrl);
 }
 
-// Merge previous and new issues
-$mergedIssues = [];
-foreach ($newIssuesByUrl as $url => $newIssue) {
-    $prevIssue = $prevIssuesByUrl[$url] ?? null;
-    $mergedIssue = $newIssue;
-    $mergedIssue['solved'] = $prevIssue['solved'] ?? false;
-    $mergedIssue['comments'] = $prevIssue['comments'] ?? [];
-    $prevErrors = $prevIssue['error'] ?? [];
-    $newErrors = $newIssue['error'] ?? [];
-    $mergedErrors = [];
-    $prevErrorMap = [];
-    foreach ($prevErrors as $err) {
-        $key = md5(json_encode([$err['type'], $err['id'], $err['message']]));
-        $prevErrorMap[$key] = $err;
-    }
-    foreach ($newErrors as $err) {
-        $key = md5(json_encode([$err['type'], $err['id'], $err['message']]));
-        if (isset($prevErrorMap[$key])) {
-            $err['solved'] = $prevErrorMap[$key]['solved'] ?? false;
-            $err['comments'] = $prevErrorMap[$key]['comments'] ?? [];
-            unset($prevErrorMap[$key]);
-        } else {
-            $err['solved'] = false;
-            $err['comments'] = [];
-        }
-        $mergedErrors[] = $err;
-    }
-    foreach ($prevErrorMap as $err) {
-        $mergedErrors[] = $err;
-    }
-    $mergedIssue['error'] = $mergedErrors;
-    $mergedIssues[] = $mergedIssue;
-}
-
-foreach ($prevIssuesByUrl as $url => $prevIssue) {
-    if (!isset($newIssuesByUrl[$url])) {
-        $mergedIssues[] = $prevIssue;
-    }
-}
+$allNewIssuesByUrl = loadPersistedIssuesByUrl($tempFile);
+$mergedIssues = mergeIssuesWithPrevious($prevIssuesByUrl, $allNewIssuesByUrl);
 
 file_put_contents($outFile, json_encode($mergedIssues, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-file_put_contents($tempFile, '');
+file_put_contents($tempFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 file_put_contents($progressFile, json_encode([
     'processed' => $counter,
     'total' => count($urls),
@@ -422,7 +484,7 @@ file_put_contents($progressFile, json_encode([
     'start_url' => $inputUrl,
     'pid' => $existingPid
 ]));
-sleep(5);
+sleep(4);
 if (file_exists($tempFile)) {
     unlink($tempFile);
 }

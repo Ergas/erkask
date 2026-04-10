@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_url'])) {
 
     $cmd = "php check-headings.php " . escapeshellarg($url) . " " . escapeshellarg($suffix);
     if ($single) $cmd .= " $single";
-    if ($skipSlug) $cmd .= " --skip-slug=" . escapeshellarg($skipSlug);
+    if ($skipSlug) $cmd .= " --skip-slug " . escapeshellarg($skipSlug);
     $fullCmd = "nohup $cmd > /dev/null 2>&1 & echo $!";
     $pid = (int) shell_exec($fullCmd);
     file_put_contents($progressFile, json_encode([
