@@ -167,15 +167,13 @@ function isInternal($base, $url) {
 }
 
 function crawlSite($startUrl) {
-    global $checkedFile;
     $visited = [];
     $queue = [$startUrl];
     while ($queue) {
         $url = array_shift($queue);
         $norm = normalizeUrl($url);
-        if (isset($visited[$norm]) || isUrlChecked($url, $checkedFile)) continue;
+        if (isset($visited[$norm])) continue;
         $visited[$norm] = true;
-        markUrlChecked($url, $checkedFile);
         yield $url;
         $html = fetchPage($url);
         if ($html === false) continue;
@@ -187,7 +185,7 @@ function crawlSite($startUrl) {
             $abs = filter_var($href, FILTER_VALIDATE_URL) ? $href : rtrim(getDomain($url), '/') . '/' . ltrim($href, '/');
             if (isInternal($startUrl, $abs)) {
                 $absNorm = normalizeUrl($abs);
-                if (!isset($visited[$absNorm]) && !isUrlChecked($abs, $checkedFile)) {
+                if (!isset($visited[$absNorm])) {
                     $queue[] = $abs;
                 }
             }
@@ -207,7 +205,18 @@ function getExistingPid($progressFile) {
 
 $result = [
     'last_updated' => date('Y-m-d H:i:s'),
-    'results' => []
+    'checked_urls' => [],
+    'results' => [],
+    'summary' => [
+        'keywords' => $keywords,
+        'search_in' => [
+            'id' => $searchId,
+            'class' => $searchClass,
+        ],
+        'skip_slugs' => array_values($skipSlugs),
+        'processed_urls' => 0,
+        'matched_urls' => 0,
+    ],
 ];
 
 $singleMode = in_array('--single', $argv, true);
@@ -266,35 +275,38 @@ foreach ($urls as $url) {
     }
     $alreadyProcessed[$norm] = true;
     markUrlChecked($url, $checkedFile);
+    $result['checked_urls'][] = $url;
 
+    sleep(2);
     $html = fetchPage($url);
     sleep(3); // Be polite
     echo "Fetching: $url\n";
-    if (!$html) continue;
-    $dom = new DOMDocument();
-    @$dom->loadHTML($html);
     $matches = [];
-    foreach ($dom->getElementsByTagName('*') as $el) {
-        $tag = strtolower($el->tagName);
-        $id = strtolower($el->getAttribute('id'));
-        $classAttr = strtolower($el->getAttribute('class'));
-        $classList = preg_split('/\s+/', $classAttr, -1, PREG_SPLIT_NO_EMPTY);
+    if ($html) {
+        $dom = new DOMDocument();
+        @$dom->loadHTML($html);
+        foreach ($dom->getElementsByTagName('*') as $el) {
+            $tag = strtolower($el->tagName);
+            $id = strtolower($el->getAttribute('id'));
+            $classAttr = strtolower($el->getAttribute('class'));
+            $classList = preg_split('/\s+/', $classAttr, -1, PREG_SPLIT_NO_EMPTY);
 
-        foreach ($keywords as $keyword) {
-            $found = false;
-            if ($searchId && $id && preg_match('/^' . preg_quote($keyword, '/') . '(\b|$)/', $id)) {
-                $found = true;
-            } elseif ($searchClass && in_array($keyword, $classList, true)) {
-                $found = true;
-            }
-            if ($found) {
-                $matches[] = [
-                    'tag' => $tag,
-                    'id' => $id,
-                    'class' => $classAttr,
-                    'text' => trim($el->textContent)
-                ];
-                break;
+            foreach ($keywords as $keyword) {
+                $found = false;
+                if ($searchId && $id && preg_match('/^' . preg_quote($keyword, '/') . '(\b|$)/', $id)) {
+                    $found = true;
+                } elseif ($searchClass && in_array($keyword, $classList, true)) {
+                    $found = true;
+                }
+                if ($found) {
+                    $matches[] = [
+                        'tag' => $tag,
+                        'id' => $id,
+                        'class' => $classAttr,
+                        'text' => trim($el->textContent)
+                    ];
+                    break;
+                }
             }
         }
     }
@@ -306,6 +318,9 @@ foreach ($urls as $url) {
     }
 
     $processed++;
+    $result['summary']['processed_urls'] = $processed;
+    $result['summary']['matched_urls'] = count($result['results']);
+    $result['last_updated'] = date('Y-m-d H:i:s');
     file_put_contents($progressFile, json_encode([
         'processed' => $processed,
         'total' => $total,
@@ -314,6 +329,7 @@ foreach ($urls as $url) {
         'pid' => $existingPid ?? getmypid()
     ]));
 }
+$result['summary']['total_urls'] = $total;
 file_put_contents($outFile, json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 file_put_contents($progressFile, json_encode([
     'processed' => $processed,
@@ -331,11 +347,7 @@ if (file_exists($checkedFile)) {
     unlink($checkedFile);
 }
 if ($result['results'] === []) {
-    echo "No elements found matching the criteria.\n";
-    cleanupFiles();
-    if(file_exists($outFile)) {
-        unlink($outFile);
-    }
+    echo "No elements found matching the criteria. Checked URLs were saved to $outFile\n";
     exit(0);
 }
 echo "Done. See $outFile\n";

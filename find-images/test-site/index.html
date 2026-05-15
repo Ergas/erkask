@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Find Images Test Site</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .inline-background {
+            background-image: url('./assets/banner-1200x628.webp');
+        }
+    </style>
+</head>
+<body>
+<section class="hero-banner main-hero">
+    <img src="./assets/cat-photo-146x223.webp" data-src="./assets/cat-photo-1920x1080.webp" aria-label="Hero cat">
+    <div class="inline-background">Inline background image</div>
+</section>
+<section id="promo-block">
+    <img srcset="./assets/dog-photo-320x180.webp 320w, ./assets/dog-photo-1280x720.webp 1280w" aria-label="Promo dog">
+    <div class="linked-background card card-highlight">Linked stylesheet background</div>
+</section>
+<a href="page-two.html">Page two</a>
+</body>
+</html>
+

@@ -2,6 +2,7 @@
 $files = glob('headings_issues-*.json');
 sort($files);
 $selected = isset($_GET['file']) ? $_GET['file'] : (isset($files[0]) ? $files[0] : null);
+$selectedFile = $selected ?? '';
 
 function loadIssues($filename) {
     if (!is_readable($filename)) return [];
@@ -34,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_url'])) {
 
     $cmd = "php check-headings.php " . escapeshellarg($url) . " " . escapeshellarg($suffix);
     if ($single) $cmd .= " $single";
-    if ($skipSlug) $cmd .= " --skip-slug=" . escapeshellarg($skipSlug);
+    if ($skipSlug) $cmd .= " --skip-slug " . escapeshellarg($skipSlug);
     $fullCmd = "nohup $cmd > /dev/null 2>&1 & echo $!";
     $pid = (int) shell_exec($fullCmd);
     file_put_contents($progressFile, json_encode([
@@ -164,7 +165,7 @@ foreach ($issues as $issue) {
 $errorTypes = array_keys($errorTypes);
 $selectedType = isset($_GET['type']) ? $_GET['type'] : '';
 
-// Extract ending from filename, e.g. headings_issues-investor.json -> INVESTOR
+// Extract ending from filename, e.g. headings_issues-page.json -> INVESTOR
 $ending = $selected
     ? strtoupper(preg_replace('/^headings_issues-|\.json$/i', '', $selected))
     : '';
@@ -276,7 +277,7 @@ foreach ($issues as $issue) {
         </select>
     </form>
     <form class="mb-4" method="get">
-        <input type="hidden" name="file" value="<?= htmlspecialchars($selected) ?>">
+        <input type="hidden" name="file" value="<?= htmlspecialchars($selectedFile) ?>">
         <label for="type" class="form-label">Filter by error type:</label>
         <select id="type" name="type" class="form-select" onchange="this.form.submit()">
             <option value="">All types</option>
@@ -409,7 +410,7 @@ foreach ($issues as $issue) {
     </div>
     <form method="post" onsubmit="return confirm('Are you sure you want to delete all issues?');">
         <input type="hidden" name="delete_issues_file" value="1">
-        <input type="hidden" name="file" value="<?= htmlspecialchars($selected) ?>">
+        <input type="hidden" name="file" value="<?= htmlspecialchars($selectedFile) ?>">
         <button type="submit" class="btn btn-danger">Delete All Issues</button>
     </form>
 </div>
