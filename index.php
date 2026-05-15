@@ -12,6 +12,11 @@ $links = [
         'desc' => 'Check and review heading issues across sites.'
     ],
     [
+        'path' => 'find-images/index.php',
+        'title' => 'Image Finder',
+        'desc' => 'Inventory page images, lazy-loaded assets, and CSS background images.'
+    ],
+    [
         'path' => 'check-aria-labels/index.php',
         'title' => 'Check ARIA Attributes',
         'desc' => 'Find elements with empty ARIA attributes (aria-label, aria-labelledby etc).'

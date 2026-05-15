@@ -1,0 +1,2 @@
+Test fixture assets are referenced by URL only; the scanner does not fetch image binaries during discovery.
+

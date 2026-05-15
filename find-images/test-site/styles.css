@@ -1,0 +1,8 @@
+section.gallery .linked-background {
+    background-image: url('./assets/shared-bg-400x200.webp');
+}
+
+#promo-block .linked-background {
+    background-image: url('./assets/shared-bg-1600x800.webp');
+}
+

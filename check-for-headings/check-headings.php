@@ -390,7 +390,7 @@ function normalizeUrl($url) {
     return "$scheme://$host$port" . ($path ? $path : '');
 }
 
-if ($argc < 2 || $argc > 4) {
+if ($argc < 3) {
     echo "Error: Invalid number of arguments.\n";
     echo "Usage: php check-headings.php <url> [suffix] (--single) (--skip-slug=<SLUG>)\n";
     exit(1);

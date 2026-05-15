@@ -3,11 +3,30 @@ $files = array_map('basename', glob(__DIR__ . '/elements_found-*.json'));
 sort($files);
 $selected = isset($_GET['file']) ? basename($_GET['file']) : (isset($files[0]) ? $files[0] : null);
 
-function loadResults($filename) {
+function getResultsFilePath($filename) {
+    if (!$filename) return null;
     $filePath = __DIR__ . '/' . basename($filename);
-    if (!is_readable($filePath)) return [];
+    return is_readable($filePath) ? $filePath : null;
+}
+
+function loadResults($filename) {
+    $filePath = getResultsFilePath($filename);
+    if (!$filePath) return [];
     $json = file_get_contents($filePath);
     return json_decode($json, true) ?: [];
+}
+
+function getResultsFileLastUpdated($filename) {
+    $filePath = getResultsFilePath($filename);
+    if (!$filePath) return null;
+
+    clearstatcache(true, $filePath);
+    $timestamp = filemtime($filePath);
+    if ($timestamp === false) return null;
+
+    return [
+        'unix' => $timestamp,
+    ];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['keyword'], $_POST['url'], $_POST['suffix'])) {
@@ -59,7 +78,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_results_file'
     exit;
 }
 
+$selectedFilePath = getResultsFilePath($selected);
 $results = $selected ? loadResults($selected) : [];
+$lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -144,13 +165,21 @@ $results = $selected ? loadResults($selected) : [];
             <?php endforeach; ?>
         </select>
     </form>
-    <?php if ($selected && file_exists(__DIR__ . '/' . $selected)): ?>
+    <?php if ($selectedFilePath): ?>
         <a href="<?= htmlspecialchars($selected) ?>" download class="btn btn-success mb-3">
             Download JSON file with results
         </a>
     <?php endif; ?>
     <?php if ($selected && $results): ?>
-        <p><strong>Last updated:</strong> <?= htmlspecialchars($results['last_updated'] ?? '') ?></p>
+        <?php if ($lastUpdated): ?>
+            <p>
+                <strong>Last updated:</strong>
+                <span
+                    id="results-last-updated"
+                    data-last-updated-timestamp="<?= (int) $lastUpdated['unix'] ?>"
+                ></span>
+            </p>
+        <?php endif; ?>
         <?php if (!empty($results['summary'])): ?>
             <p>
                 <strong>Checked URLs:</strong> <?= (int) ($results['summary']['processed_urls'] ?? 0) ?>
@@ -195,6 +224,28 @@ $results = $selected ? loadResults($selected) : [];
     </form>
 </div>
 <script>
+    function updateLastUpdatedDisplay() {
+        const element = document.getElementById('results-last-updated');
+        if (!element) return;
+
+        const timestamp = Number(element.dataset.lastUpdatedTimestamp);
+        if (!Number.isFinite(timestamp)) return;
+
+        const date = new Date(timestamp * 1000);
+        if (Number.isNaN(date.getTime())) return;
+
+        const pad = n => String(n).padStart(2, '0');
+        const day = pad(date.getDate());
+        const month = pad(date.getMonth() + 1);
+        const year = date.getFullYear();
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
+        const seconds = pad(date.getSeconds());
+
+        // Format: DD.MM.YYYY HH:MM:SS (24h)
+        element.textContent = `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+    }
+
     function getProgressFileName(filePath) {
         return String(filePath || '').split('/').pop();
     }
@@ -343,6 +394,7 @@ $results = $selected ? loadResults($selected) : [];
         });
     }
     setInterval(updateAllProgressPanel, 1500);
+    updateLastUpdatedDisplay();
     updateAllProgressPanel();
 </script>
 </body>
