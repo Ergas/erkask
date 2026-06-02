@@ -1,0 +1,49 @@
+{
+  "source": {
+    "type": "sitemap",
+    "url": "https://example.com/sitemap.xml"
+  },
+  "crawl": {
+    "maxPages": 200,
+    "sameDomainOnly": true,
+    "concurrency": 2,
+    "skipSlugs": [
+      "blog",
+      "author"
+    ],
+    "sleepBetweenRequestsSeconds": 8,
+    "pageTimeoutMs": 30000,
+    "waitAfterLoadMs": 1500,
+    "sitemapTimeoutMs": 20000
+  },
+  "browser": {
+    "headless": true,
+    "ignoreHTTPSErrors": true
+  },
+  "console": {
+    "includeErrors": true,
+    "includeWarnings": false,
+    "ignore": [
+      {
+        "type": "substring",
+        "value": "ResizeObserver loop limit exceeded"
+      },
+      {
+        "type": "regex",
+        "value": ".*googletagmanager.*"
+      }
+    ]
+  },
+  "requests": {
+    "trackFailedRequests": true,
+    "trackHttpErrors": true,
+    "ignoreResourceTypes": [],
+    "ignoreUrlPatterns": [
+      {
+        "type": "regex",
+        "value": ".*doubleclick.*"
+      }
+    ]
+  }
+}
+

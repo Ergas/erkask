@@ -21,6 +21,11 @@ $links = [
         'title' => 'Check ARIA Attributes',
         'desc' => 'Find elements with empty ARIA attributes (aria-label, aria-labelledby etc).'
     ],
+    [
+        'path' => 'check-site-errors/index.php',
+        'title' => 'Site Error Scanner',
+        'desc' => 'Scan sitemap pages for HTTP failures, request errors, console errors, and optional warnings.'
+    ],
     // Add more entries as needed
 ];
 ?>

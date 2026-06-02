@@ -2,8 +2,14 @@
   "name": "erkask-apps",
   "version": "1.1.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "php -S localhost:8000 -t ."
+    "test": "npm run test:site-errors",
+    "start": "php -S localhost:8000 -t .",
+    "scan:site-errors": "node check-site-errors/run-check.mjs",
+    "test:site-errors": "node check-site-errors/test-runner.mjs"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.8.0",
+    "playwright": "^1.54.1"
   },
   "keywords": [],
   "author": "",
