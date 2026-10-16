@@ -183,7 +183,7 @@ $lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
                 <input class="form-check-input" type="checkbox" id="search_class" name="search_class" value="1" checked>
                 <label class="form-check-label" for="search_class">Search by class</label>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3" id="url-field">
                 <label for="url" class="form-label">URL or Sitemap:</label>
                 <input type="url" class="form-control" id="url" name="url" required>
             </div>
@@ -203,7 +203,7 @@ $lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
                 <?php if ($websites): ?>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="all_websites" name="all_websites" value="1">
-                        <label class="form-check-label" for="all_websites">All configured websites (<?= count($websites) ?>)</label>
+                        <label class="form-check-label" for="all_websites">Scan all <?= count($websites) ?> configured websites</label>
                     </div>
                 <?php endif; ?>
                 <button type="submit" class="btn btn-primary mt-2">Find Elements</button>
@@ -327,16 +327,21 @@ $lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
 
     let progressInterval = null;
     const allWebsitesCheckbox = document.getElementById('all_websites');
+    const urlField = document.getElementById('url-field');
+    const urlInput = document.getElementById('url');
+    function updateWebsiteScope() {
+        const allWebsites = allWebsitesCheckbox?.checked;
+        urlField.style.display = allWebsites ? 'none' : '';
+        urlInput.disabled = allWebsites;
+        urlInput.required = !allWebsites;
+    }
     if (allWebsitesCheckbox) {
-        allWebsitesCheckbox.addEventListener('change', function() {
-            document.getElementById('url').required = !this.checked;
-        });
+        allWebsitesCheckbox.addEventListener('change', updateWebsiteScope);
+        updateWebsiteScope();
     }
 
     document.getElementById('find-elements-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const allWebsites = document.getElementById('all_websites')?.checked;
-        document.getElementById('url').required = !allWebsites;
         document.getElementById('progress-container').style.display = 'flex';
         fetch('', {
             method: 'POST',
