@@ -490,7 +490,39 @@ function extractImageName($url) {
     if (!$path) {
         return '';
     }
-    return basename($path);
+    $imageName = basename($path);
+    $decoded = rawurldecode($imageName);
+    return preg_match('//u', $decoded) === 1 ? $decoded : $imageName;
+}
+
+function extractImageUploadMonth($url) {
+    $path = parse_url((string) $url, PHP_URL_PATH);
+    if (!is_string($path) || $path === '') {
+        return '';
+    }
+    if (preg_match('#/(19\d{2}|20\d{2})/(0[1-9]|1[0-2])(?:/|$)#', $path, $matches)) {
+        return $matches[1] . '-' . $matches[2];
+    }
+    return '';
+}
+
+function compareImagesByUploadMonth($a, $b) {
+    $aMonth = (string) ($a['upload_month'] ?? '');
+    $bMonth = (string) ($b['upload_month'] ?? '');
+    if ($aMonth !== $bMonth) {
+        if ($aMonth === '') {
+            return 1;
+        }
+        if ($bMonth === '') {
+            return -1;
+        }
+        return strcmp($bMonth, $aMonth);
+    }
+    $nameCompare = strcasecmp($a['image_name'], $b['image_name']);
+    if ($nameCompare !== 0) {
+        return $nameCompare;
+    }
+    return strcasecmp($a['image_url'], $b['image_url']);
 }
 
 function normalizeImageUrlForComparison($url) {
@@ -566,6 +598,7 @@ function addOccurrence(&$occurrences, $resolvedUrl, $sourceType, $sourceAttribut
         'usage_key' => $usageKey,
         'image_name' => extractImageName($resolvedUrl),
         'image_url' => $resolvedUrl,
+        'upload_month' => extractImageUploadMonth($resolvedUrl),
         'normalized_image' => normalizeImageUrlForComparison($resolvedUrl),
         'source_type' => $sourceType,
         'source_attribute' => $sourceAttribute,
@@ -691,6 +724,7 @@ function mergeOccurrenceIntoPage(&$pageImages, $occurrence) {
             'usage_key' => $occurrence['usage_key'],
             'image_name' => $occurrence['image_name'],
             'image_url' => $occurrence['image_url'],
+            'upload_month' => $occurrence['upload_month'],
             'normalized_image' => $occurrence['normalized_image'],
             'page_url' => '',
             'source_types' => [$occurrence['source_type']],
@@ -704,6 +738,7 @@ function mergeOccurrenceIntoPage(&$pageImages, $occurrence) {
         if ($preferredUrl !== $pageImages[$key]['image_url']) {
             $pageImages[$key]['image_url'] = $preferredUrl;
             $pageImages[$key]['image_name'] = extractImageName($preferredUrl);
+            $pageImages[$key]['upload_month'] = extractImageUploadMonth($preferredUrl);
             $pageImages[$key]['normalized_image'] = normalizeImageUrlForComparison($preferredUrl);
         }
     }
@@ -732,6 +767,7 @@ function mergeUsageIndexEntry(&$usageIndex, $pageUrl, $pageImage) {
             'usage_key' => $key,
             'image_name' => $pageImage['image_name'],
             'image_url' => $pageImage['image_url'],
+            'upload_month' => $pageImage['upload_month'] ?? extractImageUploadMonth($pageImage['image_url']),
             'normalized_image' => $pageImage['normalized_image'],
             'source_types' => $pageImage['source_types'] ?? [],
             'source_attributes' => $pageImage['source_attributes'] ?? [],
@@ -743,6 +779,7 @@ function mergeUsageIndexEntry(&$usageIndex, $pageUrl, $pageImage) {
         if ($preferredUrl !== $usageIndex[$key]['image_url']) {
             $usageIndex[$key]['image_url'] = $preferredUrl;
             $usageIndex[$key]['image_name'] = extractImageName($preferredUrl);
+            $usageIndex[$key]['upload_month'] = extractImageUploadMonth($preferredUrl);
             $usageIndex[$key]['normalized_image'] = normalizeImageUrlForComparison($preferredUrl);
         }
     }
@@ -783,9 +820,7 @@ function finalizePageImages($pageImages, $pageUrl) {
     }
     unset($image);
 
-    usort($pageImages, function ($a, $b) {
-        return strcasecmp($a['image_name'], $b['image_name']);
-    });
+    usort($pageImages, 'compareImagesByUploadMonth');
 
     return array_values($pageImages);
 }
@@ -799,13 +834,7 @@ function finalizeUsageIndex($usageIndex) {
         sort($usage['aria_labels']);
     }
     unset($usage);
-    uasort($usageIndex, function ($a, $b) {
-        $nameCompare = strcasecmp($a['image_name'], $b['image_name']);
-        if ($nameCompare !== 0) {
-            return $nameCompare;
-        }
-        return strcasecmp($a['image_url'], $b['image_url']);
-    });
+    uasort($usageIndex, 'compareImagesByUploadMonth');
     return array_values($usageIndex);
 }
 

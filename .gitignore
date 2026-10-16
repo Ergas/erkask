@@ -30,3 +30,4 @@ build/
 
 # Data files should not be committed by default
 *.json
+!find-components/config.json

@@ -38,6 +38,45 @@ function appendUniqueValues(array &$target, array $values) {
 	}
 }
 
+function decodeImageName($imageName) {
+	$imageName = trim((string) $imageName);
+	if ($imageName === '') {
+		return '';
+	}
+	$decoded = rawurldecode($imageName);
+	return preg_match('//u', $decoded) === 1 ? $decoded : $imageName;
+}
+
+function extractImageUploadMonth($imageUrl) {
+	$path = parse_url((string) $imageUrl, PHP_URL_PATH);
+	if (!is_string($path) || $path === '') {
+		return '';
+	}
+	if (preg_match('#/(19\d{2}|20\d{2})/(0[1-9]|1[0-2])(?:/|$)#', $path, $matches)) {
+		return $matches[1] . '-' . $matches[2];
+	}
+	return '';
+}
+
+function compareImageRowsByUploadMonth($a, $b) {
+	$aMonth = (string) ($a['upload_month'] ?? '');
+	$bMonth = (string) ($b['upload_month'] ?? '');
+	if ($aMonth !== $bMonth) {
+		if ($aMonth === '') {
+			return 1;
+		}
+		if ($bMonth === '') {
+			return -1;
+		}
+		return strcmp($bMonth, $aMonth);
+	}
+	$nameCompare = strcasecmp($a['image_name'], $b['image_name']);
+	if ($nameCompare !== 0) {
+		return $nameCompare;
+	}
+	return strcasecmp($a['image_url'], $b['image_url']);
+}
+
 function normalizeImageRows($results) {
 	$rowsByKey = [];
 
@@ -50,10 +89,13 @@ function normalizeImageRows($results) {
 			continue;
 		}
 		if (!isset($rowsByKey[$key])) {
+			$imageUrl = (string) ($image['image_url'] ?? '');
+			$uploadMonth = trim((string) ($image['upload_month'] ?? ''));
 			$rowsByKey[$key] = [
 				'usage_key' => $key,
-				'image_name' => (string) ($image['image_name'] ?? ''),
-				'image_url' => (string) ($image['image_url'] ?? ''),
+				'image_name' => decodeImageName($image['image_name'] ?? ''),
+				'image_url' => $imageUrl,
+				'upload_month' => $uploadMonth !== '' ? $uploadMonth : extractImageUploadMonth($imageUrl),
 				'normalized_image' => (string) ($image['normalized_image'] ?? ''),
 				'source_types' => [],
 				'source_attributes' => [],
@@ -85,10 +127,13 @@ function normalizeImageRows($results) {
 					continue;
 				}
 				if (!isset($rowsByKey[$key])) {
+					$imageUrl = (string) ($image['image_url'] ?? '');
+					$uploadMonth = trim((string) ($image['upload_month'] ?? ''));
 					$rowsByKey[$key] = [
 						'usage_key' => $key,
-						'image_name' => (string) ($image['image_name'] ?? ''),
-						'image_url' => (string) ($image['image_url'] ?? ''),
+						'image_name' => decodeImageName($image['image_name'] ?? ''),
+						'image_url' => $imageUrl,
+						'upload_month' => $uploadMonth !== '' ? $uploadMonth : extractImageUploadMonth($imageUrl),
 						'normalized_image' => (string) ($image['normalized_image'] ?? ''),
 						'source_types' => [],
 						'source_attributes' => [],
@@ -115,13 +160,7 @@ function normalizeImageRows($results) {
 	}
 	unset($row);
 
-	usort($rows, function ($a, $b) {
-		$nameCompare = strcasecmp($a['image_name'], $b['image_name']);
-		if ($nameCompare !== 0) {
-			return $nameCompare;
-		}
-		return strcasecmp($a['image_url'], $b['image_url']);
-	});
+	usort($rows, 'compareImageRowsByUploadMonth');
 
 	return $rows;
 }
@@ -207,6 +246,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['export_images'], $_GET[
 	header('Content-Disposition: attachment; filename="' . $exportFilename . '"');
 	echo implode("\n", $imageUrls);
 	if (!empty($imageUrls)) {
+		echo "\n";
+	}
+	exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['export_images_with_names'], $_GET['file'])) {
+	$filename = basename($_GET['file']);
+	$exportResults = loadResults($filename);
+	$imageRows = normalizeImageRows($exportResults);
+	$exportSections = [];
+	$currentMonth = null;
+	$currentBlocks = [];
+	foreach ($imageRows as $row) {
+		$imageUrl = trim((string) ($row['image_url'] ?? ''));
+		if ($imageUrl === '') {
+			continue;
+		}
+		$uploadMonth = (string) ($row['upload_month'] ?? '');
+		if ($uploadMonth === '') {
+			$uploadMonth = 'Unknown upload date';
+		}
+		if ($currentMonth !== null && $uploadMonth !== $currentMonth) {
+			$exportSections[] = $currentMonth . "\n\n" . implode("\n\n", $currentBlocks);
+			$currentBlocks = [];
+		}
+		$currentMonth = $uploadMonth;
+		$imageName = trim((string) ($row['image_name'] ?? ''));
+		$currentBlocks[] = ($imageName !== '' ? $imageName : '[unknown image]') . "\n" . $imageUrl;
+	}
+	if ($currentMonth !== null) {
+		$exportSections[] = $currentMonth . "\n\n" . implode("\n\n", $currentBlocks);
+	}
+	$suffix = preg_replace('/^images_found-|\.json$/i', '', $filename);
+	$exportFilename = "all-images-with-names-$suffix.txt";
+	header('Content-Type: text/plain; charset=UTF-8');
+	header('Content-Disposition: attachment; filename="' . $exportFilename . '"');
+	echo implode("\n\n\n", $exportSections);
+	if (!empty($exportSections)) {
 		echo "\n";
 	}
 	exit;
@@ -310,6 +387,7 @@ $imageRows = normalizeImageRows($results);
 		<div class="mb-3 d-flex gap-2 flex-wrap">
 			<a href="<?= htmlspecialchars($selected) ?>" download class="btn btn-success">Download JSON file with results</a>
 			<a href="?export_images=1&amp;file=<?= urlencode($selected) ?>" class="btn btn-outline-success">Export all image URLs (.txt)</a>
+			<a href="?export_images_with_names=1&amp;file=<?= urlencode($selected) ?>" class="btn btn-outline-success">Export image names and URLs (.txt)</a>
 		</div>
 	<?php endif; ?>
 
@@ -354,6 +432,7 @@ $imageRows = normalizeImageRows($results);
 							<h5 class="mb-1"><?= htmlspecialchars($image['image_name'] ?: '[unknown image]') ?></h5>
 							<div class="image-meta">
 								<div><strong>Image URL:</strong> <a class="image-url" href="<?= htmlspecialchars($image['image_url']) ?>" target="_blank"><?= htmlspecialchars($image['image_url']) ?></a></div>
+								<div><strong>Upload time (year and month):</strong> <?= htmlspecialchars($image['upload_month'] ?: 'Unknown') ?></div>
 								<?php if (!empty($image['source_types'])): ?>
 									<div><strong>Source type(s):</strong> <?= htmlspecialchars(implode(', ', $image['source_types'])) ?></div>
 								<?php endif; ?>

@@ -7,14 +7,14 @@ Usage from UI:
 - Open `find-images/index.php` in your browser.
 - Fill URL (or sitemap URL), choose a suffix, optional skip slugs, pick CSS coverage, and start the job.
 - SVG files are excluded by default; enable the checkbox if you want them included.
-- Results are shown as one unique image per row, with a toggle to reveal all page URLs where that image appears.
-- You can export all unique image URLs as a plain text file.
+- Results are shown as one unique image per row, sorted by extracted upload time when the image URL contains `/YYYY/MM/`, with a toggle to reveal all page URLs where that image appears.
+- You can export all unique image URLs as a plain text file, or export image names and URLs grouped by upload time as text blocks separated by empty lines.
 
 Usage from CLI:
 - php find-images.php "https://example.com/sitemap.xml" "example-scan" --skip-slug=blog --css-scope=linked
 
 CLI usage:
-php find-images.php <url> <suffix> [--single] [--skip-slug=slug1,slug2] [--include-svgs] [--css-scope=page|linked]
+`php find-images.php <url> <suffix> [--single] [--skip-slug=slug1,slug2] [--include-svgs] [--css-scope=page|linked]`
 
 Output files (created under `find-images/`):
 - `images_found-<suffix>.json` — results file with unique images and the page URLs where each image appears

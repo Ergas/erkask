@@ -1,4 +1,12 @@
 <?php
+$configPath = __DIR__ . '/config.json';
+$config = file_exists($configPath) ? json_decode(file_get_contents($configPath), true) : [];
+$websites = is_array($config['websites'] ?? null) ? $config['websites'] : [];
+
+function websiteSuffix($name) {
+    return preg_replace('/[^a-z0-9_-]+/', '-', strtolower(trim((string) $name)));
+}
+
 $files = array_map('basename', glob(__DIR__ . '/elements_found-*.json'));
 sort($files);
 $selected = isset($_GET['file']) ? basename($_GET['file']) : (isset($files[0]) ? $files[0] : null);
@@ -16,6 +24,22 @@ function loadResults($filename) {
     return json_decode($json, true) ?: [];
 }
 
+function extractMatchedUrls(array $results): array {
+    $matchedUrls = [];
+
+    foreach (($results['results'] ?? []) as $result) {
+        $url = trim((string) ($result['url'] ?? ''));
+        if ($url !== '') {
+            $matchedUrls[$url] = true;
+        }
+    }
+
+    $matchedUrls = array_keys($matchedUrls);
+    sort($matchedUrls, SORT_NATURAL | SORT_FLAG_CASE);
+
+    return $matchedUrls;
+}
+
 function getResultsFileLastUpdated($filename) {
     $filePath = getResultsFilePath($filename);
     if (!$filePath) return null;
@@ -29,42 +53,62 @@ function getResultsFileLastUpdated($filename) {
     ];
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['keyword'], $_POST['url'], $_POST['suffix'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['keyword'], $_POST['suffix'])) {
     $keyword = trim($_POST['keyword']);
     $url = trim($_POST['url']);
-    $suffix = trim($_POST['suffix']);
     $single = !empty($_POST['single']) ? '--single' : '';
-    $progressFile = __DIR__ . "/progress" . ($suffix !== '' ? "-$suffix" : "") . ".json";
-    file_put_contents($progressFile, json_encode([
-        'processed' => 0,
-        'total' => 0,
-        'done' => false,
-        'start_url' => $url
-    ]));
-    $skipSlug = !empty($_POST['skip_slug']) ? trim($_POST['skip_slug']) : '';
-    $cmdParts = [
-        escapeshellarg(PHP_BINARY),
-        escapeshellarg(__DIR__ . '/find-elements.php'),
-        escapeshellarg($keyword),
-        escapeshellarg($url),
-        escapeshellarg($suffix),
-    ];
-    if ($single) $cmdParts[] = $single;
-    if ($skipSlug) $cmdParts[] = '--skip-slug=' . escapeshellarg($skipSlug);
-    if (!empty($_POST['search_id'])) $cmdParts[] = '--search-id';
-    if (!empty($_POST['search_class'])) $cmdParts[] = '--search-class';
-    $cmd = implode(' ', $cmdParts);
-    $fullCmd = "nohup $cmd > /dev/null 2>&1 & echo $!";
-    $pid = (int) shell_exec($fullCmd);
-    file_put_contents($progressFile, json_encode([
-        'processed' => 0,
-        'total' => 0,
-        'done' => false,
-        'start_url' => $url,
-        'pid' => $pid
-    ]));
+    $suffix = trim($_POST['suffix']);
+    $globalSkipSlugs = !empty($_POST['skip_slug']) ? trim($_POST['skip_slug']) : '';
+    $multiSite = !empty($_POST['all_websites']);
+    $jobs = [];
+
+    if ($multiSite) {
+        foreach ($websites as $website) {
+            $name = websiteSuffix($website['name'] ?? '');
+            $siteUrl = trim($website['url'] ?? '');
+            if ($name === '' || $siteUrl === '') continue;
+            $configuredSlugs = is_array($website['skipSlugs'] ?? null)
+                ? implode(',', array_map('trim', $website['skipSlugs']))
+                : '';
+            $skipSlug = implode(',', array_filter([$configuredSlugs, $globalSkipSlugs]));
+            $jobs[] = ['url' => $siteUrl, 'suffix' => "$name-$suffix", 'skipSlug' => $skipSlug];
+        }
+    } else {
+        if ($url === '') {
+            http_response_code(400);
+            exit('URL is required');
+        }
+        $jobs[] = ['url' => $url, 'suffix' => $suffix, 'skipSlug' => $globalSkipSlugs];
+    }
+
+    foreach ($jobs as $job) {
+        $progressFile = __DIR__ . "/progress-{$job['suffix']}.json";
+        file_put_contents($progressFile, json_encode([
+            'processed' => 0, 'total' => 0, 'done' => false, 'start_url' => $job['url']
+        ]));
+        $cmdParts = [
+            escapeshellarg(PHP_BINARY),
+            escapeshellarg(__DIR__ . '/find-elements.php'),
+            escapeshellarg($keyword),
+            escapeshellarg($job['url']),
+            escapeshellarg($job['suffix']),
+        ];
+        if ($single && !$multiSite) $cmdParts[] = $single;
+        if ($job['skipSlug'] !== '') $cmdParts[] = '--skip-slug=' . escapeshellarg($job['skipSlug']);
+        if (!empty($_POST['search_id'])) $cmdParts[] = '--search-id';
+        if (!empty($_POST['search_class'])) $cmdParts[] = '--search-class';
+        $pid = (int) shell_exec("nohup " . implode(' ', $cmdParts) . " > /dev/null 2>&1 & echo $!");
+        file_put_contents($progressFile, json_encode([
+            'processed' => 0, 'total' => 0, 'done' => false,
+            'start_url' => $job['url'], 'pid' => $pid
+        ]));
+    }
+
     header('Content-Type: application/json');
-    echo json_encode(['suffix' => $suffix]);
+    echo json_encode([
+        'suffixes' => array_column($jobs, 'suffix'),
+        'suffix' => count($jobs) === 1 ? $jobs[0]['suffix'] : null
+    ]);
     exit;
 }
 
@@ -75,6 +119,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_results_file'
         if (file_exists($filePath)) unlink($filePath);
     }
     header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['export_matched_urls'], $_GET['file'])) {
+    $filename = basename($_GET['file']);
+    $exportResults = loadResults($filename);
+    $matchedUrls = extractMatchedUrls($exportResults);
+    $suffix = preg_replace('/^elements_found-|\.json$/i', '', $filename);
+    $exportFilename = "matched-urls-$suffix.txt";
+
+    header('Content-Type: text/plain; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="' . $exportFilename . '"');
+    echo implode("\n", $matchedUrls);
+    if (!empty($matchedUrls)) {
+        echo "\n";
+    }
     exit;
 }
 
@@ -132,7 +192,7 @@ $lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
                 <input type="text" class="form-control" id="suffix" name="suffix" pattern="^[\w\-]+$" required>
             </div>
             <div class="col-md-2">
-                <label for="skip_slug" class="form-label">Skip Slug (comma-separated):</label>
+                <label for="skip_slug" class="form-label">Additional Skip Slugs:</label>
                 <input type="text" class="form-control" id="skip_slug" name="skip_slug" pattern="^[\w\-, ]*$">
             </div>
             <div class="col-md-2">
@@ -140,10 +200,20 @@ $lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
                     <input class="form-check-input" type="checkbox" id="single" name="single" value="1">
                     <label class="form-check-label" for="single">Single page</label>
                 </div>
+                <?php if ($websites): ?>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="all_websites" name="all_websites" value="1">
+                        <label class="form-check-label" for="all_websites">All configured websites (<?= count($websites) ?>)</label>
+                    </div>
+                <?php endif; ?>
                 <button type="submit" class="btn btn-primary mt-2">Find Elements</button>
             </div>
         </div>
     </form>
+    <?php if ($websites): ?>
+        <p class="text-muted small">Websites and their saved skip slugs are loaded from <code>config.json</code>.
+            Multi-site runs use the suffix <code>{website}-your-suffix</code>.</p>
+    <?php endif; ?>
     <div id="progress-container" style="display:none; margin-bottom:1rem;">
         <div class="d-flex align-items-center">
             <div class="spinner-border text-primary me-3" role="status"></div>
@@ -166,9 +236,14 @@ $lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
         </select>
     </form>
     <?php if ($selectedFilePath): ?>
-        <a href="<?= htmlspecialchars($selected) ?>" download class="btn btn-success mb-3">
-            Download JSON file with results
-        </a>
+        <div class="mb-3 d-flex gap-2 flex-wrap">
+            <a href="<?= htmlspecialchars($selected) ?>" download class="btn btn-success">
+                Download JSON file with results
+            </a>
+            <a href="?export_matched_urls=1&amp;file=<?= urlencode($selected) ?>" class="btn btn-outline-success">
+                Export matched URLs (.txt)
+            </a>
+        </div>
     <?php endif; ?>
     <?php if ($selected && $results): ?>
         <?php if ($lastUpdated): ?>
@@ -251,9 +326,17 @@ $lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
     }
 
     let progressInterval = null;
+    const allWebsitesCheckbox = document.getElementById('all_websites');
+    if (allWebsitesCheckbox) {
+        allWebsitesCheckbox.addEventListener('change', function() {
+            document.getElementById('url').required = !this.checked;
+        });
+    }
 
     document.getElementById('find-elements-form').addEventListener('submit', function(e) {
         e.preventDefault();
+        const allWebsites = document.getElementById('all_websites')?.checked;
+        document.getElementById('url').required = !allWebsites;
         document.getElementById('progress-container').style.display = 'flex';
         fetch('', {
             method: 'POST',
@@ -262,7 +345,7 @@ $lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
             .then(res => res.json())
             .then(data => {
                 if (progressInterval) clearInterval(progressInterval);
-                window.currentProgressFile = `progress${data.suffix ? '-' + data.suffix : ''}.json`;
+                window.currentProgressFiles = (data.suffixes || []).map(suffix => `progress-${suffix}.json`);
                 progressInterval = setInterval(pollAllProgress, 2000);
                 pollAllProgress();
             });
@@ -299,7 +382,7 @@ $lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
                     ul.appendChild(li);
 
                     // If this is the current job, update the main progress bar
-                    if (window.currentProgressFile && getProgressFileName(item.file) === window.currentProgressFile) {
+                    if (window.currentProgressFiles && window.currentProgressFiles.includes(getProgressFileName(item.file))) {
                         updateMainProgressBar(item);
                         anyActive = true;
                         currentJobVisible = true;
@@ -309,9 +392,9 @@ $lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
                 if (!anyActive) {
                     document.getElementById('progress-container').style.display = 'none';
                 }
-                if (window.currentProgressFile && !currentJobVisible) {
+                if (window.currentProgressFiles && !currentJobVisible) {
                     clearInterval(progressInterval);
-                    window.currentProgressFile = null;
+                    window.currentProgressFiles = null;
                     location.reload();
                 }
             });
@@ -326,12 +409,7 @@ $lastUpdated = $selected ? getResultsFileLastUpdated($selected) : null;
             text.textContent = `Processed: ${progress.processed} / ${progress.total} (${percent}%)`;
             bar.style.width = percent + '%';
             container.style.display = 'flex';
-            if (progress.done) {
-                container.style.display = 'none';
-                clearInterval(progressInterval);
-                deleteProgressFile(window.currentProgressFile);
-                location.reload();
-            }
+            if (progress.done) container.style.display = 'none';
         } else {
             container.style.display = 'none';
         }
